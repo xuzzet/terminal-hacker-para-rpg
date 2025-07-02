@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terminal Hacker - Ordo Realitas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Tela de boot -->
+  <div id="boot-screen" aria-live="polite">
+    <div class="boot-text">Iniciando sistema Ordo Realitas...<br>Verificando protocolos...<br>Carregando módulos...<br><span class="boot-blink">█</span></div>
+  </div>
+  <!-- Seletor de tema -->
+  <nav id="theme-switcher" aria-label="Trocar tema">
+    <button data-theme="classic" aria-label="Tema clássico">Clássico</button>
+    <button data-theme="futuristic" aria-label="Tema futurista">Futurista</button>
+    <button data-theme="retro" aria-label="Tema retrô">Retrô</button>
+  </nav>
+  <!-- Terminal principal -->
+  <main id="terminal-container" tabindex="-1">
+    <header class="terminal-titlebar">
+      <span class="led led-red" aria-label="Status vermelho"></span>
+      <span class="led led-yellow" aria-label="Status amarelo"></span>
+      <span class="led led-green" aria-label="Status verde"></span>
+      <span class="title">Terminal Hacker - Ordo Realitas</span>
+    </header>
+    <section id="terminal" style="display:none;">
+      <div id="output" aria-live="polite"></div>
+      <div id="input-line">
+        <span class="prompt" aria-hidden="true">$</span>
+        <input type="text" id="command" autocomplete="off" autofocus aria-label="Digite seu comando" />
+        <span id="blinking-cursor" aria-hidden="true">█</span>
+      </div>
+    </section>
+  </main>
+  <!-- Áudios do sistema -->
+  <audio id="typing-sound" src="sounds/typing.mp3" preload="auto"></audio>
+  <audio id="error-sound" src="sounds/error.mp3" preload="auto"></audio>
+  <audio id="success-sound" src="sounds/success.mp3" preload="auto"></audio>
+  <audio id="boot-sound" src="sounds/boot.mp3" preload="auto"></audio>
+  <audio id="ambient-music" src="music/ambient.mp3" preload="auto" loop></audio>
+  <audio id="static-sound" src="sounds/static.mp3" preload="auto"></audio>
+  <div id="intrusion-alert" style="display:none;" aria-live="assertive">ALERTA DE INTRUSÃO!</div>
+  <script src="script.js"></script>
+</body>
+</html>
