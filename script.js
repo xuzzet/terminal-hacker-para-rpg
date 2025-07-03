@@ -1,4 +1,4 @@
-// Terminal - Ordo Realitas - Profissionalizado
+// Terminal - Ordo Realitas 
 // ================================================
 
 const output = document.getElementById('output');
