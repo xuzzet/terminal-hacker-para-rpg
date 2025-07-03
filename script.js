@@ -44,7 +44,13 @@ function askCodename() {
         setTimeout(() => {
           bootScreen.style.display = 'none';
           terminal.style.display = '';
+          input.disabled = false;
+          input.value = '';
+          input.focus();
           print(`Bem-vindo, agente ${userAgent}.`, { typewriter: true });
+          setTimeout(() => {
+            print('Terminal - Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
+          }, 900);
         }, 1000);
       }
     };
@@ -75,6 +81,17 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Garante que o event listener do input só é adicionado uma vez
+if (!window.__terminalInputListenerAdded) {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !input.disabled) {
+      handleCommand(input.value);
+      input.value = '';
+    }
+  });
+  window.__terminalInputListenerAdded = true;
+}
+
 // Garante foco no input ao clicar em qualquer área do terminal
 terminal.addEventListener('mousedown', e => {
   if (e.target === terminal || e.target === output) {
@@ -84,24 +101,58 @@ terminal.addEventListener('mousedown', e => {
 
 // Efeito typewriter
 const typewriterPrint = (text, callback, sound = true) => {
+  // Usa graphemes para suportar acentos, emojis, etc.
+  const chars = Array.from(text);
   let i = 0;
   const typingSound = document.getElementById('typing-sound');
-  (function type() {
-    if (i < text.length) {
-      output.innerText += text[i];
-      if (sound && text[i] !== '\n') {
-        typingSound.currentTime = 0;
-        typingSound.play();
+  function type() {
+    if (i < chars.length) {
+      if (chars[i] === '\n') {
+        output.innerHTML += '<br>';
+      } else {
+        output.innerHTML += chars[i];
+        if (sound && chars[i] !== '\n' && chars[i].trim() !== '') {
+          typingSound.currentTime = 0;
+          typingSound.play();
+        }
       }
       i++;
       setTimeout(type, 18 + Math.random() * 30);
     } else {
-      output.innerText += '\n';
+      output.innerHTML += '<br>';
       output.scrollTop = output.scrollHeight;
       if (callback) callback();
     }
-  })();
+  }
+  type();
 };
+
+// Função auxiliar para imprimir uma linha com efeito typewriter, respeitando acentos e quebras de linha
+function printLineTypewriter(text, cb) {
+  const lineDiv = document.createElement('div');
+  output.appendChild(lineDiv);
+  const chars = Array.from(text);
+  let i = 0;
+  const typingSound = document.getElementById('typing-sound');
+  function type() {
+    if (i < chars.length) {
+      if (chars[i] === '\n') {
+        lineDiv.innerHTML += '<br>';
+      } else {
+        lineDiv.innerHTML += chars[i];
+        if (chars[i] !== '\n' && chars[i].trim() !== '') {
+          typingSound.currentTime = 0;
+          typingSound.play();
+        }
+      }
+      i++;
+      setTimeout(type, 18 + Math.random() * 30);
+    } else {
+      if (cb) cb();
+    }
+  }
+  type();
+}
 
 // Cursor piscante
 const blinkingCursor = document.getElementById('blinking-cursor');
@@ -143,7 +194,8 @@ const print = (text, options = {}) => {
   if (options.typewriter) {
     typewriterPrint(text, options.callback, options.sound !== false);
   } else {
-    output.innerText += text + '\n';
+    // Usa innerHTML para preservar quebras de linha e acentos
+    output.innerHTML += text.replace(/\n/g, '<br>') + '<br>';
     output.scrollTop = output.scrollHeight;
   }
   limitOutputLines();
@@ -357,25 +409,6 @@ function handleCommand(cmd) {
       '...'
     ];
     let idx = 0;
-    function printLineTypewriter(text, cb) {
-      const lineDiv = document.createElement('div');
-      output.appendChild(lineDiv);
-      let i = 0;
-      const typingSound = document.getElementById('typing-sound');
-      (function type() {
-        if (i < text.length) {
-          lineDiv.innerText += text[i];
-          if (text[i] !== '\n') {
-            typingSound.currentTime = 0;
-            typingSound.play();
-          }
-          i++;
-          setTimeout(type, 18 + Math.random() * 30);
-        } else {
-          if (cb) cb();
-        }
-      })();
-    }
     function nextMsg() {
       if (idx < narrativa.length) {
         printLineTypewriter(narrativa[idx], () => {
@@ -608,9 +641,10 @@ function showAgentChat() {
   let idx = 0;
   function nextLine() {
     if (idx < chat.length) {
-      print(chat[idx], {typewriter: true, sound: false});
-      idx++;
-      setTimeout(nextLine, 900);
+      printLineTypewriter(chat[idx], () => {
+        idx++;
+        setTimeout(nextLine, 900);
+      });
     }
   }
   nextLine();
@@ -1008,3 +1042,10 @@ showLogs = function() {
   // Dica extra
   if (logs.length > 0) print('DICA: Use cat, grep ou decodificar para investigar arquivos gerados.');
 };
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !input.disabled) {
+    handleCommand(input.value);
+    input.value = '';
+  }
+});
