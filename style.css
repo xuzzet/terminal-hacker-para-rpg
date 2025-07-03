@@ -234,7 +234,7 @@ body {
   margin-top: 0;
   margin-bottom: 0;
   position: sticky;
-  bottom: 0;
+  bottom: 18px; /* Sobe a barra de digitar um pouco acima do fundo */
   z-index: 20;
   background: rgba(34, 34, 34, 0.92);
   border-radius: 6px;
@@ -251,6 +251,21 @@ body {
   border: 2px solid #fff;
   box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
   background: #111;
+}
+@media (max-width: 900px) {
+  #input-line {
+    bottom: 14px;
+  }
+}
+@media (max-width: 600px) {
+  #input-line {
+    bottom: 10px;
+  }
+}
+@media (max-width: 400px) {
+  #input-line {
+    bottom: 6px;
+  }
 }
 
 .prompt {
