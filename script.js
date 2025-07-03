@@ -65,7 +65,59 @@ function askCodename() {
 window.addEventListener('DOMContentLoaded', () => {
   bootSound.volume = 0.5;
   bootSound.play();
-  setTimeout(askCodename, 2000);
+
+  // Boot animado
+  const bootLines = [
+    'Iniciando sistema Ordo Realitas...',
+    'Verificando protocolos de segurança...',
+    'Carregando módulos principais...',
+    'Sincronizando banco de dados oculto...',
+    '[OK] Rede segura estabelecida.',
+    '[OK] Criptografia de canal ativada.',
+    '[ALERTA] Sinais residuais detectados. Análise em andamento...',
+    'Inicializando interface neural...',
+    'Aguardando autenticação do agente...'
+  ];
+  const bootLog = document.getElementById('boot-log');
+  if (bootLog) {
+    bootLog.innerHTML = '';
+    let idx = 0;
+    function showNextBootLine() {
+      if (idx < bootLines.length) {
+        const line = document.createElement('span');
+        line.className = 'boot-line';
+        bootLog.appendChild(line);
+        let i = 0;
+        function typeChar() {
+          if (i < bootLines[idx].length) {
+            line.textContent += bootLines[idx][i];
+            if (bootLines[idx][i].trim() !== '') {
+              bootSound.currentTime = 0.01;
+              bootSound.play();
+            }
+            i++;
+            setTimeout(typeChar, 12 + Math.random() * 30);
+          } else {
+            bootLog.appendChild(document.createElement('br'));
+            idx++;
+            setTimeout(showNextBootLine, 320 + Math.random() * 200);
+          }
+        }
+        typeChar();
+      } else {
+        // Mostra o cursor ao final
+        const blink = document.createElement('span');
+        blink.className = 'boot-blink';
+        blink.textContent = '█';
+        bootLog.appendChild(blink);
+        setTimeout(askCodename, 900);
+      }
+    }
+    showNextBootLine();
+  } else {
+    setTimeout(askCodename, 2000);
+  }
+
   input.focus();
 
   // Overlays visuais
@@ -191,10 +243,26 @@ const errorSound = document.getElementById('error-sound');
 const successSound = document.getElementById('success-sound');
 const alertSound = new Audio('sounds/alert.mp3');
 
-// Impressão no terminal
+// ===== SISTEMA DE IMPRESSÃO TYPEWRITER EM FILA =====
+let typewriterQueue = [];
+let typewriterActive = false;
+
+function processTypewriterQueue() {
+  if (typewriterActive || typewriterQueue.length === 0) return;
+  typewriterActive = true;
+  const { text, callback, sound } = typewriterQueue.shift();
+  typewriterPrint(text, () => {
+    typewriterActive = false;
+    if (callback) callback();
+    processTypewriterQueue();
+  }, sound);
+}
+
+// Substitui print para usar fila se typewriter
 const print = (text, options = {}) => {
   if (options.typewriter) {
-    typewriterPrint(text, options.callback, options.sound !== false);
+    typewriterQueue.push({ text, callback: options.callback, sound: options.sound !== false });
+    processTypewriterQueue();
   } else {
     // Usa innerHTML para preservar quebras de linha e acentos
     output.innerHTML += text.replace(/\n/g, '<br>') + '<br>';
@@ -968,7 +1036,13 @@ function themeByCommand(theme) {
 function shutdownTerminal() {
   print('Desligando terminal...', {typewriter: true});
   setTimeout(() => {
-    document.body.innerHTML = '<div style="color:#33ff33;font-family:monospace;text-align:center;margin-top:20vh;font-size:2em;">Terminal desligado.<br>Pressione F5 para reiniciar.</div>';
+    document.body.innerHTML = `
+      <div class="shutdown-screen">
+        Terminal desligado.<br>Pressione <span style="color:#fff">F5</span> para reiniciar.<span class="shutdown-blink">█</span>
+      </div>
+      <div id="visual-noise" aria-hidden="true"></div>
+      <div id="scanlines" aria-hidden="true"></div>
+    `;
   }, 1200);
 }
 
@@ -1052,3 +1126,4 @@ input.addEventListener('keydown', e => {
     input.value = '';
   }
 });
+

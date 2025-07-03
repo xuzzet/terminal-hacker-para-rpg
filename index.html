@@ -9,7 +9,19 @@
 <body>
   <!-- Tela de boot -->
   <div id="boot-screen" aria-live="polite">
-    <div class="boot-text">Iniciando sistema Ordo Realitas...<br>Verificando protocolos...<br>Carregando módulos...<br><span class="boot-blink">█</span></div>
+    <div class="boot-overlay"></div>
+    <div class="boot-text" id="boot-log">
+      <span class="boot-line">Iniciando sistema Ordo Realitas...</span><br>
+      <span class="boot-line">Verificando protocolos de segurança...</span><br>
+      <span class="boot-line">Carregando módulos principais...</span><br>
+      <span class="boot-line">Sincronizando banco de dados oculto...</span><br>
+      <span class="boot-line">[OK] Rede segura estabelecida.</span><br>
+      <span class="boot-line">[OK] Criptografia de canal ativada.</span><br>
+      <span class="boot-line">[ALERTA] Sinais residuais detectados. Análise em andamento...</span><br>
+      <span class="boot-line">Inicializando interface neural...</span><br>
+      <span class="boot-line">Aguardando autenticação do agente...</span><br>
+      <span class="boot-blink">█</span>
+    </div>
   </div>
   <!-- Seletor de tema -->
   <nav id="theme-switcher" aria-label="Trocar tema">

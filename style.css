@@ -148,53 +148,146 @@ input, textarea, select, button, #command {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3em;
+  font-size: 1em;
   font-family: monospace;
   transition: opacity 1s;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 .boot-text {
-  text-shadow: 0 0 8px #33ff33;
+  background: none;
+  border-radius: 0;
+  padding: 0.7em 0.5em 0.7em 0.5em;
+  box-shadow: none;
+  position: relative;
+  min-width: 260px;
+  min-height: 120px;
+  max-width: 98vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: none;
+  text-shadow: none;
+}
+#boot-log {
+  font-size: 0.98em;
+  line-height: 1.5;
+  letter-spacing: 0.7px;
+  min-height: 80px;
+  min-width: 180px;
+  max-width: 98vw;
+  color: #33ff33;
+  text-shadow: none;
+  margin-bottom: 0.7em;
+  margin-top: 0.2em;
+  position: relative;
+}
+.boot-line {
+  display: block;
+  margin-bottom: 0.08em;
+  margin-top: 0.04em;
+  word-break: break-word;
+  padding-left: 0;
+  animation: fadeInLineMinimal 0.5s cubic-bezier(.39,.58,.57,1) 1;
+  filter: none;
+  text-shadow: none;
+  font-weight: 400;
+  font-size: 1em;
+  letter-spacing: 0.5px;
+}
+.boot-line.boot-erro {
+  color: #ff3333 !important;
+  text-shadow: none;
+  filter: none;
+  font-weight: 600;
+  animation: fadeInLineMinimal 0.5s, bootBlinkMinimal 0.13s 2;
+}
+.boot-line.boot-alerta {
+  color: #ffcc00 !important;
+  text-shadow: none;
+  filter: none;
+  font-weight: 600;
+  animation: fadeInLineMinimal 0.5s, bootBlinkMinimal 0.13s 2;
+}
+.boot-line.boot-ok {
+  color: #33ff33 !important;
+  text-shadow: none;
+  font-weight: 500;
+}
+.boot-line.boot-log {
+  color: #33bfff !important;
+  text-shadow: none;
+  font-weight: 500;
+}
+.boot-line.boot-agente {
+  color: #fff !important;
+  text-shadow: none;
+  font-style: italic;
+  font-weight: 400;
+}
+.boot-line.boot-msg {
+  color: #aaffaa !important;
+  font-style: italic;
+  text-shadow: none;
+  font-weight: 400;
+}
+@keyframes bootBlinkMinimal {
+  0% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+@keyframes fadeInLineMinimal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .boot-blink {
   animation: blink 1s steps(1) infinite;
-}
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-#theme-switcher {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1100;
-  display: flex;
-  gap: 4px;
-}
-#theme-switcher button {
-  background: #181c18;
-  color: #33ff33;
-  border: 1.5px solid #33ff33;
-  margin-left: 0;
-  font-family: monospace;
-  cursor: pointer;
-  padding: 5px 14px;
-  border-radius: 6px;
+  filter: none;
   font-size: 1em;
-  font-weight: bold;
-  box-shadow: 0 1px 4px #000a;
-  transition: background 0.3s, color 0.3s, border 0.3s, transform 0.1s;
+  margin-left: 2px;
+  color: #33ff33;
+  text-shadow: none;
 }
-#theme-switcher button:hover {
-  background: #33ff33;
-  color: #000;
-  border: 1.5px solid #33ff33;
-  transform: scale(1.07);
+#boot-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,255,0,0.04) 2px,
+    rgba(0,0,0,0.08) 4px,
+    rgba(0,0,0,0) 6px
+  );
+  opacity: 0.13;
+  animation: scanlineMove 2.5s linear infinite;
 }
-#theme-switcher button.active {
-  background: #33ff33;
-  color: #000;
+#boot-screen::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.7"/></svg>');
+  opacity: 0.06;
+  animation: noiseMove 1.2s steps(2) infinite;
 }
+@media (max-width: 600px) {
+  .boot-text {
+    padding: 0.4em 0.1em 0.4em 0.1em;
+    min-width: 0;
+    max-width: 99vw;
+    font-size: 0.93em;
+  }
+  #boot-log {
+    min-width: 0;
+    max-width: 99vw;
+    font-size: 0.93em;
+  }
+}
+/* ===== FIM BOOTSCREEN ===== */
 
 #terminal {
   padding: 24px 18px 18px 18px;
@@ -821,3 +914,60 @@ input, textarea, select, button {
 #terminal-container, #terminal, #output {
   overflow-x: hidden;
 }
+
+/* ===== TELA DE DESLIGAR IMERSIVA ===== */
+.shutdown-screen {
+  position: fixed;
+  z-index: 3000;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #000;
+  color: #33ff33;
+  font-family: monospace;
+  font-size: 2.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  letter-spacing: 1.2px;
+  line-height: 1.6;
+  animation: shutdownFade 1.2s cubic-bezier(.39,.58,.57,1);
+  user-select: none;
+}
+@keyframes shutdownFade {
+  0% { opacity: 0; filter: blur(2px); }
+  60% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; filter: blur(0); }
+}
+.shutdown-screen .shutdown-blink {
+  color: #33ff33;
+  margin-left: 6px;
+  font-size: 1.1em;
+  animation: blink 1s steps(1) infinite;
+}
+.shutdown-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0px,
+    rgba(0,255,0,0.04) 2px,
+    rgba(0,0,0,0.08) 4px,
+    rgba(0,0,0,0) 6px
+  );
+  opacity: 0.13;
+  animation: scanlineMove 2.5s linear infinite;
+}
+.shutdown-screen::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.7"/></svg>');
+  opacity: 0.06;
+  animation: noiseMove 1.2s steps(2) infinite;
+}
+/* ===== FIM TELA DE DESLIGAR ===== */
