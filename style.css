@@ -14,7 +14,13 @@ body {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  /* Visual noise overlay */
+  /* Permite seleção apenas em campos de input para acessibilidade */
+}
+input, textarea, select, button, #command {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
 }
 
 #visual-noise {
@@ -195,14 +201,14 @@ body {
   height: 100%;
   min-height: 0;
   box-sizing: border-box;
-  overflow-y: auto;
+  overflow-y: auto; /* Permite rolagem do terminal novamente */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   flex: 1;
   position: relative;
   z-index: 10;
-  padding-bottom: 0;
+  padding-bottom: 56px; /* Garante espaço acima da barra de digitar (input-line) */
 }
 
 #output {
@@ -215,7 +221,7 @@ body {
   text-shadow: 0 0 4px #33ff3344;
   position: relative;
   z-index: 10;
-  overflow-y: auto;
+  overflow-y: auto; /* Permite rolagem do output novamente */
   margin-bottom: 0;
   padding: 18px 24px 12px 24px;
   border-radius: 8px;
@@ -223,6 +229,8 @@ body {
   box-sizing: border-box;
   -webkit-box-shadow: 0 0 4px #33ff3344;
   box-shadow: 0 0 4px #33ff3344;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
 }
 
 #output > div, #output > span, #output > p {
@@ -252,8 +260,14 @@ body {
   margin-top: 0;
   margin-bottom: 0;
   position: sticky;
-  bottom: 18px; /* Sobe a barra de digitar um pouco acima do fundo */
+  left: unset;
+  right: unset;
+  bottom: -8px; /* Ainda mais próxima do fundo */
   z-index: 20;
+  width: auto;
+  max-width: unset;
+  margin: 0;
+  box-shadow: 0 0 8px #33ff3340;
   background: rgba(34, 34, 34, 0.92);
   border: 1.5px solid #33ff33;
   -webkit-backdrop-filter: blur(2px);
@@ -271,39 +285,48 @@ body {
   appearance: none;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  position: -webkit-sticky;
+  position: sticky;
   align-items: stretch;
   min-height: 38px;
   height: auto;
+  /* Sombra para destacar a barra separada do terminal */
+  box-shadow: 0 2px 16px #000a, 0 0 8px #33ff3340;
 }
 #input-line:focus-within {
   border: 2px solid #fff;
   -webkit-box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
   box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
   background: #111;
+  animation: shakeInput 0.18s linear 1;
 }
 @media (max-width: 900px) {
   #input-line {
-    bottom: 14px;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
-    -webkit-box-shadow: 0 0 8px #33ff3340;
-    box-shadow: 0 0 8px #33ff3340;
+    bottom: -8px;
+    width: auto;
+    max-width: unset;
+    left: unset;
+    right: unset;
   }
 }
 @media (max-width: 600px) {
   #input-line {
-    bottom: 10px;
-    font-size: 1em;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
+    bottom: -8px;
+    width: auto;
+    max-width: unset;
+    left: unset;
+    right: unset;
   }
 }
 @media (max-width: 400px) {
   #input-line {
-    bottom: 6px;
-    font-size: 0.93em;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
+    bottom: -8px;
+    width: auto;
+    max-width: unset;
+    left: unset;
+    right: unset;
   }
 }
 
@@ -351,11 +374,16 @@ body {
 #blinking-cursor {
   color: #33ff33;
   margin-left: 2px;
-  animation: blink 1s steps(1) infinite;
+  animation: blink 1s steps(1) infinite, cursorColor 2.2s linear infinite;
   font-weight: bold;
   font-size: 1.3em;
   text-shadow: 0 0 6px #33ff3344;
   align-self: center;
+}
+@keyframes cursorColor {
+  0% { color: #33ff33; }
+  50% { color: #aaffaa; }
+  100% { color: #33ff33; }
 }
 
 .glitch {
@@ -544,6 +572,7 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
     border-radius: 6px;
     -webkit-box-shadow: 0 0 8px #33ff3340;
     box-shadow: 0 0 8px #33ff3340;
+    bottom: 0px;
   }
   .terminal-titlebar {
     font-size: 1em;
@@ -570,6 +599,7 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
     font-size: 0.98em;
     -webkit-border-radius: 6px;
     border-radius: 6px;
+    bottom: 0px;
   }
   .terminal-titlebar {
     font-size: 0.98em;
@@ -595,6 +625,7 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
     padding: 2px 1vw;
     -webkit-border-radius: 6px;
     border-radius: 6px;
+    bottom: 0px;
   }
   .terminal-titlebar {
     font-size: 0.93em;
@@ -623,10 +654,170 @@ input, textarea, select, button {
   font-size: 16px;
 }
 
-/* Corrige problemas de input-line em Safari/iOS */
-#input-line {
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  position: -webkit-sticky;
-  position: sticky;
+/* === Detalhes imersivos adicionais === */
+
+/* Efeito de tremor sutil ao focar input-line */
+#input-line:focus-within {
+  animation: shakeInput 0.18s linear 1;
+}
+@keyframes shakeInput {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+/* Efeito glitch para linhas de erro/acesso negado (adicione .glitch em JS) */
+.glitch {
+  animation: glitch 0.3s linear 1;
+}
+@keyframes glitch {
+  0% { text-shadow: 2px 0 red, -2px 0 blue; }
+  20% { text-shadow: -2px 0 red, 2px 0 blue; }
+  40% { text-shadow: 2px 2px red, -2px -2px blue; }
+  60% { text-shadow: -2px -2px red, 2px 2px blue; }
+  80% { text-shadow: 2px 0 red, -2px 0 blue; }
+  100% { text-shadow: none; }
+}
+
+/* Scanlines mais perceptíveis, mas discretas */
+#scanlines {
+  opacity: 0.28;
+  animation: scanlineMove 2.5s linear infinite;
+}
+@keyframes scanlineMove {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 12px; }
+}
+
+/* Fade-in nas linhas impressas (adicione .fade-in em JS) */
+.printed-line, .fade-in {
+  animation: fadeInLine 0.7s cubic-bezier(.39,.58,.57,1) 1;
+}
+@keyframes fadeInLine {
+  from { opacity: 0; filter: blur(2px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+/* Flash rápido ao pressionar Enter (adicione .flash-beep em JS) */
+.flash-beep {
+  animation: flashBeep 0.12s linear 1;
+}
+@keyframes flashBeep {
+  0% { background: #33ff33; color: #000; }
+  100% { background: none; color: inherit; }
+}
+
+/* Mantém o visual original, só adiciona efeitos de imersão */
+
+#terminal, #output {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+#terminal::-webkit-scrollbar, #output::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* === EFEITOS HACKER/CYBERPUNK ADICIONAIS === */
+
+/* Phosphor glow mais intenso nas letras do terminal/output */
+#output, #terminal, .prompt, #command, .printed-line {
+  text-shadow:
+    0 0 2px #33ff33cc,
+    0 0 6px #33ff3344,
+    0 0 18px #33ff3311;
+}
+
+/* Sombra interna sutil nas bordas do terminal (efeito CRT) */
+#terminal-container {
+  box-shadow:
+    0 8px 32px 0 rgba(0,0,0,0.7),
+    0 1.5px 0 #33ff33 inset,
+    0 0 0 6px #111a inset,
+    0 0 32px #33ff3311 inset;
+}
+
+/* Reflexo animado sutil no topo do terminal (efeito glass) */
+#terminal-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 38px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(0,0,0,0) 100%);
+  opacity: 0.22;
+  z-index: 3;
+  animation: glassReflex 3.2s linear infinite alternate;
+}
+@keyframes glassReflex {
+  0% { opacity: 0.18; }
+  100% { opacity: 0.28; }
+}
+
+/* Artefatos de ruído digital nas bordas do terminal */
+#terminal-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent, #33ff3308 2px, transparent 4px),
+              repeating-linear-gradient(180deg, transparent, #33ff3305 1.5px, transparent 3px);
+  opacity: 0.13;
+  z-index: 2;
+}
+
+/* Efeito de ghosting/rastro nas linhas impressas (CRT) */
+.printed-line, .fade-in {
+  position: relative;
+}
+.printed-line::after, .fade-in::after {
+  content: attr(data-ghost);
+  position: absolute;
+  left: 0; top: 0;
+  color: #33ff3355;
+  filter: blur(2.5px) brightness(1.2);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scanline glitch horizontal (ativável via .hacker-interference em JS) */
+.hacker-interference {
+  position: relative;
+  overflow: hidden;
+}
+.hacker-interference::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 7px;
+  background: linear-gradient(90deg, #33ff3340 0%, #0000 100%);
+  opacity: 0.22;
+  filter: blur(1.5px);
+  animation: interferenceMove 0.18s linear infinite alternate;
+  pointer-events: none;
+  z-index: 100;
+}
+@keyframes interferenceMove {
+  0% { transform: translateY(-2px) scaleX(1.01); }
+  100% { transform: translateY(2px) scaleX(0.99); }
+}
+
+/* Cursor piscando com glitch e distorção de cor */
+#blinking-cursor {
+  animation: blink 1s steps(1) infinite, cursorColor 2.2s linear infinite, cursorGlitch 0.22s linear infinite;
+  filter: drop-shadow(0 0 2px #33ff33cc) drop-shadow(0 0 6px #33ff3344);
+}
+@keyframes cursorGlitch {
+  0% { text-shadow: 1px 0 #33ff33, -1px 0 #fff; }
+  50% { text-shadow: -1px 0 #33ff33, 1px 0 #fff; }
+  100% { text-shadow: 0 0 6px #33ff33; }
+}
+
+/* Ajuste para garantir que os efeitos não causem overflow */
+#terminal-container, #terminal, #output {
+  overflow-x: hidden;
 }
