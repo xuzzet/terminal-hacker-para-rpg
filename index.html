@@ -17,6 +17,10 @@
     <button data-theme="futuristic" aria-label="Tema futurista">Futurista</button>
     <button data-theme="retro" aria-label="Tema retrô">Retrô</button>
   </nav>
+  <!-- Camada de ruído visual (digital noise) -->
+  <div id="visual-noise" aria-hidden="true"></div>
+  <!-- Camada de scanlines -->
+  <div id="scanlines" aria-hidden="true"></div>
   <!-- Terminal principal -->
   <main id="terminal-container">
     <header class="terminal-titlebar">
@@ -34,6 +38,8 @@
       </div>
       <span id="dica-acessibilidade" style="position:absolute;left:-9999px;">Digite comandos e pressione Enter. Use seta para cima para repetir o último comando.</span>
     </section>
+    <!-- Camada para fluxos de dados animados (opcional, ativável via JS) -->
+    <div class="data-stream" aria-hidden="true" style="display:none;"></div>
   </main>
   <!-- Áudios do sistema -->
   <audio id="typing-sound" src="sounds/typing.mp3" preload="auto"></audio>
