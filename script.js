@@ -1,4 +1,4 @@
-// Terminal Hacker Ordo Realitas - Profissionalizado
+// Terminal - Ordo Realitas - Profissionalizado
 // ================================================
 
 const output = document.getElementById('output');
@@ -6,8 +6,8 @@ const input = document.getElementById('command');
 
 // Comandos disponíveis
 const comandos = {
-  ajuda: `Comandos Disponíveis:\n  ajuda               - Mostra esta mensagem\n  limpar              - Limpa o terminal\n  decodificar morse <msg> - Decodifica código Morse\n  decodificar bin <msg>   - Decodifica Binário\n  decodificar base64 <msg>- Decodifica Base64\n  sobre               - Informações do sistema`,
-  sobre: `Terminal de Decodificação da Ordo Realitas\nUtilizado por agentes para interceptar comunicações cifradas.\nVersão 1.3.0 - Protocolo Sangue/Conhecimento`
+  ajuda: `Comandos Disponíveis:\n  ajuda               - Mostra esta mensagem\n  limpar              - Limpa o terminal\n  decodificar <tipo> <msg> - Decodifica uma mensagem cifrada\n    Tipos: morse, bin, base64, hex, rot13, atbash, cesar\n  sobre               - Informações do sistema`,
+  sobre: `Terminal de Decodificação da Ordo Realitas\nUtilizado por agentes para interceptar comunicações cifradas.\nVersão 1.3.0 - Protocolo Reconhecimento/Infiltraçao`
 };
 
 // Elementos principais
@@ -60,6 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
   bootSound.volume = 0.5;
   bootSound.play();
   setTimeout(askCodename, 2000);
+  input.focus();
 
   // Overlays visuais
   if (!document.getElementById('visual-noise')) {
@@ -71,6 +72,13 @@ window.addEventListener('DOMContentLoaded', () => {
     const scan = document.createElement('div');
     scan.id = 'scanlines';
     document.body.appendChild(scan);
+  }
+});
+
+// Garante foco no input ao clicar em qualquer área do terminal
+terminal.addEventListener('mousedown', e => {
+  if (e.target === terminal || e.target === output) {
+    input.focus();
   }
 });
 
@@ -117,6 +125,12 @@ themeButtons.forEach(btn => {
     btn.classList.add('active');
   });
 });
+// Garante apenas um botão ativo
+function setActiveThemeButton(theme) {
+  themeButtons.forEach(b => b.classList.remove('active'));
+  const btn = Array.from(themeButtons).find(b => b.dataset.theme === theme);
+  if (btn) btn.classList.add('active');
+}
 if (themeButtons[0]) themeButtons[0].classList.add('active');
 
 // Sons
@@ -152,10 +166,31 @@ const decodeMorse = text => {
   ).join(' ');
 };
 const decodeBinary = text => text.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
+const decodeHex = text => {
+  return text.replace(/\b([0-9a-fA-F]{2})\b/g, (m) => String.fromCharCode(parseInt(m, 16)));
+};
+const decodeRot13 = text => {
+  return text.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base);
+  });
+};
+const decodeAtbash = text => {
+  return text.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode(base + 25 - (c.charCodeAt(0) - base));
+  });
+};
+const decodeCesar = (text, shift = 3) => {
+  return text.replace(/[a-zA-Z]/g, c => {
+    const base = c <= 'Z' ? 65 : 97;
+    return String.fromCharCode(((c.charCodeAt(0) - base - shift + 26) % 26) + base);
+  });
+};
 
 // Nomes de agentes fictícios
 const agentNames = [
-  'Specter', 'Ghost', 'Cipher', 'Oráculo', 'Vigil', 'Echo', 'Shade', 'Zero', 'Nômade', 'Sentinela'
+  'Marcos Torres', 'Mabel Oliveira', 'Rodrigo Miranda', 'Zoe Romano', 'Victor Santos'
 ];
 const randomAgent = () => agentNames[Math.floor(Math.random() * agentNames.length)];
 
@@ -202,106 +237,6 @@ const fakeScan = () => {
   });
 };
 
-// Simulação de conexão
-const fakeConnect = ip => {
-  if (!lastScanHosts.length) {
-    print('Nenhum host encontrado. Use escanear antes de conectar.', {typewriter: true});
-    errorSound.currentTime = 0;
-    errorSound.play();
-    return;
-  }
-  const found = lastScanHosts.find(h => h.ip === ip);
-  if (found) {
-    print(`Conectando ao host ${ip}...`, {typewriter: true});
-    animatedProgress('Estabelecendo conexão', 900, () => {
-      print('Acesso concedido.', {typewriter: true});
-      showAccessMsg('ACESSO CONCEDIDO');
-      successSound.currentTime = 0;
-      successSound.play();
-      shakeTerminal();
-      agentProfile.connections++;
-      agentProfile.lastHost = ip;
-      lastCommand = 'conectar';
-    });
-  } else {
-    print(`Host ${ip} não encontrado no último escaneamento.`, {typewriter: true});
-    showAccessMsg('ACESSO NEGADO', true);
-    errorSound.currentTime = 0;
-    errorSound.play();
-    shakeTerminal();
-    output.classList.add('flash-error');
-    setTimeout(() => output.classList.remove('flash-error'), 900);
-  }
-};
-
-// Exibe logs fictícios
-const showLogs = () => {
-  const logsCommon = [
-    '[2025-07-02 22:13] ALERTA: Atividade incomum detectada no host 192.168.1.13',
-    '[2025-07-02 22:15] Mensagem interceptada: "O ritual começa à meia-noite"',
-    '[2025-07-02 22:17] Sinal desconhecido decodificado: "Σκοτεινή Πύλη"',
-    '[2025-07-02 22:20] Acesso root concedido ao agente Specter',
-    '[2025-07-02 22:22] LOG: Protocolo Sangue/Conhecimento ativado.'
-  ];
-  const logsRare = [
-    '[2025-07-02 22:23] ALERTA: Anomalia detectada no host 10.10.10.10',
-    '[2025-07-02 22:24] Mensagem oculta: "A chave está no símbolo do infinito"',
-    '[2025-07-02 22:25] LOG: Acesso não autorizado detectado.'
-  ];
-  let logs = logsCommon.slice();
-  if (Math.random() < 0.25) logs.push(logsRare[Math.floor(Math.random()*logsRare.length)]);
-  print('Exibindo logs recentes...\n' + logs.join('\n'), {typewriter: true});
-  successSound.currentTime = 0;
-  successSound.play();
-  lastCommand = 'logs';
-};
-
-// Simulação de descriptografia
-const fakeDecrypt = msg => {
-  animatedProgress('Descriptografando', 900, () => {
-    print('Mensagem decifrada: "' + (msg || 'A verdade está nos símbolos.') + '"', {typewriter: true});
-    successSound.currentTime = 0;
-    successSound.play();
-    lastCommand = 'descriptografar';
-  });
-};
-
-// Simulação de invasão
-const fakeHack = () => {
-  print('Iniciando ataque...', {typewriter: true});
-  glitchEffect();
-  setTimeout(() => {
-    const fail = Math.random() < 0.18;
-    if (fail) {
-      print('Ataque detectado! Firewall bloqueou a ação.', {typewriter: true});
-      showAccessMsg('FIREWALL BLOQUEOU', true);
-      errorSound.currentTime = 0;
-      errorSound.play();
-      shakeTerminal();
-      lastCommand = 'invadir-falha';
-    } else {
-      print('Bypass de firewall... OK\nInjetando payload... OK\nAcesso root obtido!', {typewriter: true});
-      successSound.currentTime = 0;
-      successSound.play();
-      glitchEffect();
-      const flash = document.createElement('div');
-      flash.style.position = 'fixed';
-      flash.style.top = '0';
-      flash.style.left = '0';
-      flash.style.width = '100vw';
-      flash.style.height = '100vh';
-      flash.style.background = 'radial-gradient(circle, #33ff33cc 0%, #000 80%)';
-      flash.style.opacity = '0.18';
-      flash.style.zIndex = '1001';
-      document.body.appendChild(flash);
-      setTimeout(() => flash.remove(), 350);
-      shakeTerminal();
-      agentProfile.hacks++;
-      lastCommand = 'invadir';
-    }
-  }, 1500);
-};
-
 // Decodificação animada
 const animatedDecode = (type, content, decodeFn) => {
   if (!content.trim()) {
@@ -336,6 +271,10 @@ const intrusionAlert = document.getElementById('intrusion-alert');
 
 // Função para mostrar alerta de intrusão
 function showIntrusionAlert() {
+  if (intrusionAlert.style.display === 'block') {
+    intrusionAlert.style.display = 'none';
+    staticSound.pause();
+  }
   intrusionAlert.style.display = 'block';
   staticSound.currentTime = 0;
   staticSound.play();
@@ -345,15 +284,14 @@ function showIntrusionAlert() {
   }, 1800);
 }
 
-// Função para simular entrada de dados secretos
+// Função para simular entrada de dados secretos (corrigida para remover container)
 function showDataStream(lines = 8) {
   let container = document.getElementById('data-stream');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'data-stream';
-    container.className = 'data-stream';
-    document.body.appendChild(container);
-  }
+  if (container) container.remove();
+  container = document.createElement('div');
+  container.id = 'data-stream';
+  container.className = 'data-stream';
+  document.body.appendChild(container);
   for (let i = 0; i < lines; i++) {
     const line = document.createElement('div');
     line.className = 'data-stream-line';
@@ -363,6 +301,7 @@ function showDataStream(lines = 8) {
     container.appendChild(line);
     setTimeout(() => line.remove(), 1200);
   }
+  setTimeout(() => container.remove(), 1400);
 }
 
 // LEDs piscando conforme eventos
@@ -403,13 +342,60 @@ function handleCommand(cmd) {
   const base = args[0].toLowerCase();
 
   if (base === 'ordo') {
+    if (window.ordoRunning) return; // Evita múltiplas execuções simultâneas
+    window.ordoRunning = true;
     showDataStream(16);
-    print('VOCÊ DESCOBRIU O SEGREDO DA ORDO REALITAS!');
-    blinkLed('yellow');
-    setTimeout(() => {
-      print('A verdade está além do véu...');
-      blinkLed('green');
-    }, 1200);
+    // Narrativa de investigação do Marcos Torres
+    const narrativa = [
+      '[LOG DE INVESTIGAÇÃO - AGENTE MARCOS TORRES]',
+      '22:41 - Cheguei ao local do ritual. Sinais de atividade recente. O chão está coberto de símbolos estranhos.',
+      '22:43 - Encontrei vestígios de cera e um círculo desenhado em sangue. O ar está pesado, sensação de ser observado.',
+      '22:45 - Ouvi sussurros vindos do corredor. Gravei o áudio para análise posterior. Nenhum sinal de Mabel até agora.',
+      '22:47 - Mensagem cifrada encontrada: "A Fé é a chave. Eles observam."',
+      '22:49 - Preciso sair. Algo está errado. Encerrando log.',
+      '...'
+    ];
+    let idx = 0;
+    function printLineTypewriter(text, cb) {
+      const lineDiv = document.createElement('div');
+      output.appendChild(lineDiv);
+      let i = 0;
+      const typingSound = document.getElementById('typing-sound');
+      (function type() {
+        if (i < text.length) {
+          lineDiv.innerText += text[i];
+          if (text[i] !== '\n') {
+            typingSound.currentTime = 0;
+            typingSound.play();
+          }
+          i++;
+          setTimeout(type, 18 + Math.random() * 30);
+        } else {
+          if (cb) cb();
+        }
+      })();
+    }
+    function nextMsg() {
+      if (idx < narrativa.length) {
+        printLineTypewriter(narrativa[idx], () => {
+          idx++;
+          setTimeout(nextMsg, 1200);
+        });
+      } else {
+        blinkLed('yellow');
+        setTimeout(() => {
+          printLineTypewriter('...', () => {
+            blinkLed('green');
+            setTimeout(() => {
+              printLineTypewriter('...', () => {
+                window.ordoRunning = false;
+              });
+            }, 1200);
+          });
+        }, 1200);
+      }
+    }
+    nextMsg();
     return;
   }
 
@@ -435,7 +421,7 @@ function handleCommand(cmd) {
       const content = args.slice(2).join(' ');
       if (!type) {
         print('Exemplo de uso: decodificar morse <mensagem>', {typewriter: true});
-        print('Tipos disponíveis: morse, bin, base64', {typewriter: true});
+        print('Tipos disponíveis: morse, bin, base64, hex, rot13, atbash, cesar', {typewriter: true});
         break;
       }
       if (type === 'morse') {
@@ -444,11 +430,19 @@ function handleCommand(cmd) {
         animatedDecode('binário', content, decodeBinary);
       } else if (type === 'base64') {
         animatedDecode('base64', content, atob);
+      } else if (type === 'hex') {
+        animatedDecode('hexadecimal', content, decodeHex);
+      } else if (type === 'rot13') {
+        animatedDecode('rot13', content, decodeRot13);
+      } else if (type === 'atbash') {
+        animatedDecode('atbash', content, decodeAtbash);
+      } else if (type === 'cesar' || type === 'césar') {
+        animatedDecode('césar', content, decodeCesar);
       } else {
         print('Erro: Tipo de decodificação desconhecido.', {typewriter: true});
         output.classList.add('flash-error');
         setTimeout(() => output.classList.remove('flash-error'), 900);
-        print('Tipos disponíveis: morse, bin, base64', {typewriter: true});
+        print('Tipos disponíveis: morse, bin, base64, hex, rot13, atbash, cesar', {typewriter: true});
       }
       lastCommand = 'decodificar';
       break;
@@ -558,6 +552,7 @@ const showAccessMsg = (msg, deny = false) => {
 // Destaque do prompt
 input.addEventListener('focus', () => {
   document.querySelector('.prompt').classList.add('active');
+  setTimeout(() => input.select(), 0);
 });
 input.addEventListener('blur', () => {
   document.querySelector('.prompt').classList.remove('active');
@@ -566,13 +561,25 @@ input.addEventListener('blur', () => {
 // Entrada de comandos
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
-    print(`$ ${input.value}`);
-    handleCommand(input.value);
+    const comando = input.value.trim();
+    if (comando) {
+      print(`$ ${comando}`);
+      handleCommand(comando);
+    }
     input.value = '';
+  } else if (e.key === 'ArrowUp') {
+    // Recupera último comando digitado
+    if (window.lastTypedCommand) {
+      input.value = window.lastTypedCommand;
+      setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
+    }
+  } else {
+    // Salva o comando atual para navegação
+    window.lastTypedCommand = input.value;
   }
 });
 
 // Mensagem inicial
 setTimeout(() => {
-  print('Terminal Hacker da Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
+  print('Terminal - Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
 }, 300);

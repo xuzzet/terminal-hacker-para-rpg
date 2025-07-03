@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Terminal Hacker - Ordo Realitas</title>
+  <title>Terminal - Ordo Realitas</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,20 +18,21 @@
     <button data-theme="retro" aria-label="Tema retrô">Retrô</button>
   </nav>
   <!-- Terminal principal -->
-  <main id="terminal-container" tabindex="-1">
+  <main id="terminal-container">
     <header class="terminal-titlebar">
-      <span class="led led-red" aria-label="Status vermelho"></span>
-      <span class="led led-yellow" aria-label="Status amarelo"></span>
-      <span class="led led-green" aria-label="Status verde"></span>
-      <span class="title">Terminal Hacker - Ordo Realitas</span>
+      <span class="led led-red" aria-label="Status vermelho" tabindex="0" title="Status: Vermelho (Erro/Critico)"></span>
+      <span class="led led-yellow" aria-label="Status amarelo" tabindex="0" title="Status: Atenção"></span>
+      <span class="led led-green" aria-label="Status verde" tabindex="0" title="Status: Operacional"></span>
+      <span class="title">Terminal - Ordo Realitas</span>
     </header>
     <section id="terminal" style="display:none;">
-      <div id="output" aria-live="polite"></div>
+      <div id="output" aria-live="polite" tabindex="0" aria-label="Saída do terminal"></div>
       <div id="input-line">
         <span class="prompt" aria-hidden="true">$</span>
-        <input type="text" id="command" autocomplete="off" autofocus aria-label="Digite seu comando" />
+        <input type="text" id="command" autocomplete="off" autofocus aria-label="Digite seu comando" spellcheck="false" aria-describedby="dica-acessibilidade" />
         <span id="blinking-cursor" aria-hidden="true">█</span>
       </div>
+      <span id="dica-acessibilidade" style="position:absolute;left:-9999px;">Digite comandos e pressione Enter. Use seta para cima para repetir o último comando.</span>
     </section>
   </main>
   <!-- Áudios do sistema -->

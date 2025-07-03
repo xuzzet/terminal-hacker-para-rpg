@@ -77,7 +77,15 @@ body {
   font-weight: bold;
   letter-spacing: 1px;
   font-size: 1.1em;
+  font-family: monospace;
+  text-transform: none;
   text-shadow: 0 0 8px #33ff3344;
+  padding-left: 0;
+  padding-right: 0;
+  position: static;
+}
+.terminal-titlebar .title::before {
+  content: none;
 }
 .led {
   width: 13px;
@@ -178,6 +186,7 @@ body {
   flex: 1;
   position: relative;
   z-index: 10;
+  padding-bottom: 0;
 }
 
 #output {
@@ -186,18 +195,62 @@ body {
   min-height: 200px;
   font-size: 1.13em;
   letter-spacing: 0.5px;
-  line-height: 1.5;
+  line-height: 1.6;
   text-shadow: 0 0 4px #33ff3344;
   position: relative;
   z-index: 10;
+  overflow-y: auto;
+  margin-bottom: 0;
+  padding: 18px 24px 12px 24px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.18);
+  box-sizing: border-box;
+}
+
+#output > div, #output > span, #output > p {
+  margin-bottom: 0.45em;
+  margin-top: 0.1em;
+  word-break: break-word;
+  line-height: 1.7;
+  padding-left: 2px;
+}
+
+#output > div:last-child, #output > span:last-child, #output > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Para garantir que o texto digitado pelo printLineTypewriter também fique organizado */
+.printed-line {
+  margin-bottom: 0.45em;
+  margin-top: 0.1em;
+  word-break: break-word;
+  line-height: 1.7;
+  padding-left: 2px;
 }
 
 #input-line {
   display: flex;
   align-items: center;
-  margin-top: 8px;
-  position: relative;
-  z-index: 10;
+  margin-top: 0;
+  margin-bottom: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: rgba(34, 34, 34, 0.92);
+  border-radius: 6px;
+  border: 1.5px solid #33ff33;
+  box-shadow: 0 0 8px #33ff3340;
+  padding: 4px 10px;
+  margin-top: 12px;
+  transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  align-items: stretch;
+  min-height: 38px;
+  height: auto;
+}
+#input-line:focus-within {
+  border: 2px solid #fff;
+  box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
+  background: #111;
 }
 
 .prompt {
@@ -206,23 +259,28 @@ body {
   font-size: 1.3em;
   font-weight: bold;
   text-shadow: 0 0 6px #33ff3344;
-}
-.prompt.active {
-  color: #fff;
-  text-shadow: 0 0 12px #33ff33, 0 0 2px #fff;
-  filter: brightness(1.5);
+  opacity: 0.85;
+  align-self: center;
 }
 
 #command {
-  background: none;
+  background: transparent;
   border: none;
   color: #33ff33;
   font-family: monospace;
   font-size: 1.18em;
   flex-grow: 1;
   outline: none;
-  padding: 2px 0;
+  padding: 2px 0 2px 6px;
   letter-spacing: 1px;
+  caret-color: #fff;
+  min-width: 120px;
+  height: 100%;
+  box-sizing: border-box;
+}
+#command:focus {
+  background: none;
+  color: #fff;
 }
 
 #blinking-cursor {
@@ -232,6 +290,7 @@ body {
   font-weight: bold;
   font-size: 1.3em;
   text-shadow: 0 0 6px #33ff3344;
+  align-self: center;
 }
 
 .glitch {
@@ -264,6 +323,9 @@ body.theme-futuristic .terminal-titlebar .title {
   color: #00fff7;
   text-shadow: 0 0 8px #00fff744;
 }
+body.theme-futuristic .terminal-titlebar .title::before {
+  content: none;
+}
 body.theme-futuristic #terminal, body.theme-futuristic #output, body.theme-futuristic .prompt, body.theme-futuristic #command {
   color: #00fff7;
   text-shadow: 0 0 6px #00fff744;
@@ -280,6 +342,9 @@ body.theme-retro #terminal-container {
 body.theme-retro .terminal-titlebar .title {
   color: #ffcc00;
   text-shadow: 0 0 8px #ffcc0044;
+}
+body.theme-retro .terminal-titlebar .title::before {
+  content: none;
 }
 body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, body.theme-retro #command {
   color: #ffcc00;
