@@ -6,7 +6,7 @@ const input = document.getElementById('command');
 
 // Comandos disponíveis
 const comandos = {
-  ajuda: `Comandos Disponíveis:\n  ajuda               - Mostra esta mensagem\n  limpar              - Limpa o terminal\n  decodificar <tipo> <msg> - Decodifica uma mensagem cifrada\n    Tipos: morse, bin, base64, hex, rot13, atbash, cesar\n  sobre               - Informações do sistema`,
+  ajuda: `Comandos Disponíveis:\n  ajuda               - Mostra esta mensagem\n  limpar              - Limpa o terminal\n  decodificar <tipo> <msg> - Decodifica uma mensagem cifrada\n    Tipos: morse, bin, base64, hex, rot13, atbash, cesar\n  sobre               - Informações do sistema\n  escanear            - Escaneia hosts\n  conectar <ip>       - Conecta a um host\n  logs                - Mostra logs\n  descriptografar <msg> - Descriptografa mensagem\n  invadir             - Invade host conectado\n  tema <nome>         - Troca o tema\n  desligar            - Desliga o terminal\n  quem                - Mostra perfil do agente\n  dica                - Dica contextual\n  codinome <nome>     - Altera codinome\n  conversa            - Log de conversa dos agentes\n  ls                  - Lista arquivos\n  cat <arquivo>       - Mostra conteúdo de arquivo\n  criar <arq> <txt>   - Cria arquivo\n  rm <arquivo>        - Remove arquivo\n  editar <arq> <txt>  - Edita arquivo\n  mv <arq> <novo>     - Renomeia arquivo\n  grep <txt>          - Busca texto em arquivos`,
   sobre: `Terminal de Decodificação da Ordo Realitas\nUtilizado por agentes para interceptar comunicações cifradas.\nVersão 1.3.0 - Protocolo Reconhecimento/Infiltraçao`
 };
 
@@ -405,7 +405,7 @@ function handleCommand(cmd) {
       lastCommand = 'limpar';
       break;
     case 'ajuda':
-      print(comandos.ajuda + `\nComandos extras:\nescanear, conectar <ip>, logs, descriptografar <msg>, invadir, tema <nome>, desligar, quem, dica, codinome <nome>`, {typewriter: true});
+      print(comandos.ajuda, {typewriter: true});
       successSound.currentTime = 0;
       successSound.play();
       lastCommand = 'ajuda';
@@ -505,6 +505,34 @@ function handleCommand(cmd) {
     case 'conversa':
       showAgentChat();
       lastCommand = 'conversa';
+      break;
+    case 'ls':
+      cmd_ls();
+      lastCommand = 'ls';
+      break;
+    case 'cat':
+      cmd_cat(args[1]);
+      lastCommand = 'cat';
+      break;
+    case 'rm':
+      cmd_rm(args[1]);
+      lastCommand = 'rm';
+      break;
+    case 'criar':
+      cmd_criar(args[1], ...args.slice(2));
+      lastCommand = 'criar';
+      break;
+    case 'editar':
+      cmd_editar(args[1], ...args.slice(2));
+      lastCommand = 'editar';
+      break;
+    case 'mv':
+      cmd_mv(args[1], args[2]);
+      lastCommand = 'mv';
+      break;
+    case 'grep':
+      cmd_grep(args[1]);
+      lastCommand = 'grep';
       break;
     default:
       failCount++;
@@ -643,6 +671,121 @@ input.addEventListener('keydown', e => {
 setTimeout(() => {
   print('Terminal - Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
 }, 300);
+
+// ===== SISTEMA DE ARQUIVOS VIRTUAL =====
+const fs = {
+  files: {
+    'leia-me.txt': 'Bem-vindo ao terminal Ordo Realitas! Use ls para listar arquivos.',
+  },
+  exists(name) { return Object.prototype.hasOwnProperty.call(this.files, name); },
+  read(name) { return this.exists(name) ? this.files[name] : null; },
+  write(name, content) { this.files[name] = content; },
+  remove(name) { if (this.exists(name)) delete this.files[name]; },
+  list() { return Object.keys(this.files); }
+};
+
+// ===== COMANDOS DE ARQUIVO =====
+function cmd_ls() {
+  const files = fs.list();
+  if (files.length === 0) print('Nenhum arquivo encontrado.');
+  else print(files.join('\n'));
+}
+function cmd_cat(name) {
+  if (!name) { print('Uso: cat <arquivo>'); return; }
+  if (!fs.exists(name)) { print('Arquivo não encontrado.'); return; }
+  print(fs.read(name));
+}
+function cmd_rm(name) {
+  if (!name) { print('Uso: rm <arquivo>'); return; }
+  if (!fs.exists(name)) { print('Arquivo não encontrado.'); return; }
+  fs.remove(name);
+  print('Arquivo removido: ' + name);
+}
+function cmd_criar(name, ...conteudo) {
+  if (!name || !conteudo.length) { print('Uso: criar <arquivo> <conteúdo>'); return; }
+  fs.write(name, conteudo.join(' '));
+  print('Arquivo criado: ' + name);
+}
+
+// ===== COMANDOS DE ARQUIVO AVANÇADOS =====
+function cmd_editar(name, ...conteudo) {
+  if (!name || !fs.exists(name)) {
+    print('Uso: editar <arquivo> <novo_conteúdo>');
+    return;
+  }
+  if (!conteudo.length) {
+    print('Nada para editar.');
+    return;
+  }
+  fs.write(name, conteudo.join(' '));
+  print('Arquivo editado: ' + name);
+}
+function cmd_mv(oldName, newName) {
+  if (!oldName || !newName) {
+    print('Uso: mv <arquivo_antigo> <arquivo_novo>');
+    return;
+  }
+  if (!fs.exists(oldName)) {
+    print('Arquivo não encontrado.');
+    return;
+  }
+  if (fs.exists(newName)) {
+    print('Já existe um arquivo com esse nome.');
+    return;
+  }
+  fs.write(newName, fs.read(oldName));
+  fs.remove(oldName);
+  print(`Arquivo renomeado para: ${newName}`);
+}
+function cmd_grep(padrao) {
+  if (!padrao) {
+    print('Uso: grep <texto>');
+    return;
+  }
+  let achou = false;
+  fs.list().forEach(name => {
+    const conteudo = fs.read(name);
+    if (conteudo && conteudo.includes(padrao)) {
+      print(`(${name}): ${conteudo}`);
+      achou = true;
+    }
+  });
+  if (!achou) print('Nenhum resultado encontrado.');
+}
+
+// ===== INTEGRAÇÃO DOS COMANDOS COM ARQUIVOS =====
+// Modifica fakeScan para criar arquivos de hosts
+const originalFakeScan = fakeScan;
+fakeScan = function() {
+  originalFakeScan();
+  // Cria arquivos de hosts
+  lastScanHosts.forEach(h => {
+    fs.write(`host_${h.ip.replace(/\./g,'_')}.txt`, `Host: ${h.ip}\nPortas: ${h.ports.join(', ')}`);
+  });
+  print('Arquivos de hosts criados. Use ls para ver.');
+};
+// Modifica fakeConnect para criar arquivo de log
+const originalFakeConnect = fakeConnect;
+fakeConnect = function(ip) {
+  originalFakeConnect(ip);
+  if (ip && lastScanHosts.some(h => h.ip === ip)) {
+    fs.write(`log_conexao_${ip.replace(/\./g,'_')}.txt`, `Conexão estabelecida com ${ip} em 16/04/2025.`);
+  }
+};
+// Modifica fakeHack para criar arquivo secreto
+const originalFakeHack = fakeHack;
+fakeHack = function() {
+  if (!agentProfile.lastHost) { originalFakeHack(); return; }
+  originalFakeHack();
+  fs.write(`secreto_${agentProfile.lastHost.replace(/\./g,'_')}.txt`, 'Dado secreto extraído do host. Use cat para ler.');
+};
+// Modifica showLogs para ler arquivos de log
+const originalShowLogs = showLogs;
+showLogs = function() {
+  const logs = fs.list().filter(f => f.startsWith('log_conexao_'));
+  if (logs.length === 0) originalShowLogs();
+  else logs.forEach(f => print(`${f}:\n${fs.read(f)}`));
+};
 
 // Função para conectar a um host
 function fakeConnect(ip) {
