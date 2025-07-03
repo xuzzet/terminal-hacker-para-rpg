@@ -6,6 +6,14 @@ body {
   color: #33ff33;
   font-family: monospace;
   transition: background 0.5s, color 0.5s, filter 0.5s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
   /* Visual noise overlay */
 }
 
@@ -18,6 +26,7 @@ body {
   height: 100vh;
   opacity: 0.13;
   background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.7"/></svg>');
+  -webkit-animation: noiseMove 1.2s steps(2) infinite;
   animation: noiseMove 1.2s steps(2) infinite;
 }
 @keyframes noiseMove {
@@ -40,6 +49,7 @@ body {
     rgba(0,0,0,0) 6px
   );
   opacity: 0.22;
+  -webkit-mix-blend-mode: multiply;
   mix-blend-mode: multiply;
 }
 
@@ -56,7 +66,12 @@ body {
   overflow: hidden;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
+  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
+  -webkit-box-shadow: 0 8px 32px 0 rgba(0,0,0,0.7), 0 1.5px 0 #33ff33 inset;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.7), 0 1.5px 0 #33ff33 inset;
+  -webkit-border-radius: 0;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
 }
@@ -92,6 +107,7 @@ body {
   height: 13px;
   border-radius: 50%;
   margin-right: 7px;
+  -webkit-box-shadow: 0 0 8px #000a;
   box-shadow: 0 0 8px #000a;
   display: inline-block;
   border: 1.5px solid #222;
@@ -205,6 +221,8 @@ body {
   border-radius: 8px;
   background: rgba(0,0,0,0.18);
   box-sizing: border-box;
+  -webkit-box-shadow: 0 0 4px #33ff3344;
+  box-shadow: 0 0 4px #33ff3344;
 }
 
 #output > div, #output > span, #output > p {
@@ -237,34 +255,55 @@ body {
   bottom: 18px; /* Sobe a barra de digitar um pouco acima do fundo */
   z-index: 20;
   background: rgba(34, 34, 34, 0.92);
-  border-radius: 6px;
   border: 1.5px solid #33ff33;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-box-shadow: 0 0 8px #33ff3340;
   box-shadow: 0 0 8px #33ff3340;
-  padding: 4px 10px;
-  margin-top: 12px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  -moz-transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  -o-transition: border 0.2s, box-shadow 0.2s, background 0.2s;
   transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   align-items: stretch;
   min-height: 38px;
   height: auto;
 }
 #input-line:focus-within {
   border: 2px solid #fff;
+  -webkit-box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
   box-shadow: 0 0 16px #33ff33cc, 0 0 2px #fff;
   background: #111;
 }
 @media (max-width: 900px) {
   #input-line {
     bottom: 14px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 0 8px #33ff3340;
+    box-shadow: 0 0 8px #33ff3340;
   }
 }
 @media (max-width: 600px) {
   #input-line {
     bottom: 10px;
+    font-size: 1em;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
   }
 }
 @media (max-width: 400px) {
   #input-line {
     bottom: 6px;
+    font-size: 0.93em;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
   }
 }
 
@@ -292,10 +331,21 @@ body {
   min-width: 120px;
   height: 100%;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 #command:focus {
   background: none;
   color: #fff;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #blinking-cursor {
@@ -490,6 +540,10 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
     padding: 4px 4vw;
     min-height: 38px;
     font-size: 1em;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 0 8px #33ff3340;
+    box-shadow: 0 0 8px #33ff3340;
   }
   .terminal-titlebar {
     font-size: 1em;
@@ -514,6 +568,8 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
     padding: 4px 2vw;
     min-height: 36px;
     font-size: 0.98em;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
   }
   .terminal-titlebar {
     font-size: 0.98em;
@@ -537,6 +593,8 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   #input-line {
     font-size: 0.93em;
     padding: 2px 1vw;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
   }
   .terminal-titlebar {
     font-size: 0.93em;
@@ -551,4 +609,24 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
   max-height: 100vh;
+}
+
+/* Fallback para backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+  #terminal-container, #input-line {
+    background: rgba(10, 20, 10, 0.98) !important;
+  }
+}
+
+/* Corrige zoom automático em inputs no iOS */
+input, textarea, select, button {
+  font-size: 16px;
+}
+
+/* Corrige problemas de input-line em Safari/iOS */
+#input-line {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  position: -webkit-sticky;
+  position: sticky;
 }
