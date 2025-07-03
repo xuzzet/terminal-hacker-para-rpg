@@ -146,8 +146,10 @@ function printLineTypewriter(text, cb) {
         }
       }
       i++;
+      output.scrollTop = output.scrollHeight; // Scroll automático
       setTimeout(type, 18 + Math.random() * 30);
     } else {
+      output.scrollTop = output.scrollHeight; // Garante scroll ao final
       if (cb) cb();
     }
   }
@@ -992,56 +994,57 @@ function safeAtob(str) {
   }
 }
 
-// ===== MELHORIA DE IMERSÃO E CORRELAÇÃO =====
-// Adiciona dicas e pistas em arquivos criados por comandos
-const pistasPorHost = {
-  '192.168.0.2': 'DICA: Use decodificar morse ... para analisar mensagens interceptadas.',
-  '10.0.0.5': 'DICA: Há um arquivo oculto neste host. Use grep senha.',
-  '172.16.1.10': 'DICA: Mensagem cifrada encontrada. Tente descriptografar.',
-  '192.168.1.13': 'DICA: Portas incomuns abertas. Pode haver algo escondido.',
-  '10.10.10.10': 'DICA: Host vulnerável. Invada para obter segredos.',
-  '172.20.0.7': 'DICA: Artefato digital suspeito. Use cat para investigar.',
-  '192.168.100.100': 'DICA: Comunicação criptografada. Use decodificar base64 ...',
-};
-// Modifica fakeScan para incluir pistas nos arquivos de host
-const originalFakeScanImm = fakeScan;
-fakeScan = function() {
-  originalFakeScanImm();
-  lastScanHosts.forEach(h => {
-    let texto = `Host: ${h.ip}\nPortas: ${h.ports.join(', ')}`;
-    if (pistasPorHost[h.ip]) texto += `\n${pistasPorHost[h.ip]}`;
-    fs.write(`host_${h.ip.replace(/\./g,'_')}.txt`, texto);
+// ================= TESTES DE PADRÃO DE IMPRESSÃO =================
+// Comando especial: testar-comandos
+function testarComandos() {
+  const comandosTest = [
+    'ajuda', 'sobre', 'ls', 'ls -a', 'cat leia-me.txt', 'criar teste.txt teste',
+    'editar teste.txt novo', 'rm teste.txt', 'mv leia-me.txt novo.txt', 'grep Bem-vindo',
+    'escanear', 'conectar 192.168.0.2', 'invadir', 'logs', 'descriptografar mensagem',
+    'decodificar morse ...', 'tema classico', 'quem', 'dica', 'codinome Teste', 'conversa'
+  ];
+  let passed = 0, failed = 0;
+  const originalPrint = window.print;
+  const originalPrintLineTypewriter = window.printLineTypewriter;
+  let printUsed = false, typewriterUsed = false;
+  window.print = function(text, options) {
+    printUsed = true;
+    if (options && options.typewriter) typewriterUsed = true;
+    return originalPrint.apply(this, arguments);
+  };
+  window.printLineTypewriter = function(text, cb) {
+    typewriterUsed = true;
+    return originalPrintLineTypewriter.apply(this, arguments);
+  };
+  comandosTest.forEach(cmd => {
+    printUsed = false; typewriterUsed = false;
+    try {
+      handleCommand(cmd);
+      if (printUsed || typewriterUsed) {
+        passed++;
+      } else {
+        failed++;
+        originalPrint('ERRO: Comando não usou função de impressão padrão: ' + cmd);
+      }
+    } catch (e) {
+      failed++;
+      originalPrint('ERRO ao testar comando: ' + cmd + ' -> ' + e.message);
+    }
   });
-  print('Arquivos de hosts criados com pistas. Use ls/cat para investigar.');
-};
-// Modifica fakeHack para gerar arquivos secretos com pistas
-const originalFakeHackImm = fakeHack;
-fakeHack = function() {
-  if (!agentProfile.lastHost) { originalFakeHackImm(); return; }
-  originalFakeHackImm();
-  let pista = 'Nada encontrado.';
-  if (pistasPorHost[agentProfile.lastHost]) pista = 'PISTA: ' + pistasPorHost[agentProfile.lastHost];
-  fs.write(`secreto_${agentProfile.lastHost.replace(/\./g,'_')}.txt`, `Dado secreto extraído do host.\n${pista}`);
-};
-// Modifica fakeConnect para criar logs com contexto
-const originalFakeConnectImm = fakeConnect;
-fakeConnect = function(ip) {
-  originalFakeConnectImm(ip);
-  if (ip && lastScanHosts.some(h => h.ip === ip)) {
-    let contexto = 'Conexão estabelecida com ' + ip + ' em 16/04/2025.';
-    if (pistasPorHost[ip]) contexto += '\n' + pistasPorHost[ip];
-    fs.write(`log_conexao_${ip.replace(/\./g,'_')}.txt`, contexto);
+  window.print = originalPrint;
+  window.printLineTypewriter = originalPrintLineTypewriter;
+  originalPrint(`Testes de comandos finalizados. Passaram: ${passed}, Falharam: ${failed}`);
+}
+// Permite rodar pelo terminal: "testar-comandos"
+const originalHandleCommand = handleCommand;
+handleCommand = function(cmd) {
+  if (cmd.trim() === 'testar-comandos') {
+    testarComandos();
+    return;
   }
+  originalHandleCommand.apply(this, arguments);
 };
-// Modifica showLogs para mostrar logs e pistas
-const originalShowLogsImm = showLogs;
-showLogs = function() {
-  const logs = fs.list().filter(f => f.startsWith('log_conexao_'));
-  if (logs.length === 0) originalShowLogsImm();
-  else logs.forEach(f => print(`${f}:\n${fs.read(f)}`));
-  // Dica extra
-  if (logs.length > 0) print('DICA: Use cat, grep ou decodificar para investigar arquivos gerados.');
-};
+// ================= FIM DOS TESTES =================
 
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !input.disabled) {
