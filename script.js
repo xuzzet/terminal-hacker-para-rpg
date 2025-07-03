@@ -146,6 +146,7 @@ const print = (text, options = {}) => {
     output.innerText += text + '\n';
     output.scrollTop = output.scrollHeight;
   }
+  limitOutputLines();
 };
 
 const clearTerminal = () => { output.innerText = ''; };
@@ -507,7 +508,7 @@ function handleCommand(cmd) {
       lastCommand = 'conversa';
       break;
     case 'ls':
-      cmd_ls();
+      cmd_ls(args[1]);
       lastCommand = 'ls';
       break;
     case 'cat':
@@ -515,7 +516,7 @@ function handleCommand(cmd) {
       lastCommand = 'cat';
       break;
     case 'rm':
-      cmd_rm(args[1]);
+      cmd_rm(args[1], args[2]);
       lastCommand = 'rm';
       break;
     case 'criar':
@@ -637,100 +638,133 @@ const showAccessMsg = (msg, deny = false) => {
   setTimeout(() => { el.style.opacity = '0'; }, 1200);
 };
 
-// Destaque do prompt
-input.addEventListener('focus', () => {
-  document.querySelector('.prompt').classList.add('active');
-  setTimeout(() => input.select(), 0);
-});
-input.addEventListener('blur', () => {
-  document.querySelector('.prompt').classList.remove('active');
-});
+// Atualiza prompt visual do input-line para refletir codinome/host
+function updatePromptVisual() {
+  const promptEl = document.querySelector('.prompt');
+  let promptStr = '$';
+  if (userAgent) promptStr = `[${userAgent}`;
+  if (agentProfile.lastHost) promptStr += `@${agentProfile.lastHost}`;
+  if (userAgent) promptStr += ']$';
+  promptEl.textContent = promptStr;
+}
+input.addEventListener('focus', updatePromptVisual);
+input.addEventListener('blur', updatePromptVisual);
+setInterval(updatePromptVisual, 2000); // Atualiza periodicamente
 
-// Entrada de comandos
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const comando = input.value.trim();
-    if (comando) {
-      print(`$ ${comando}`);
-      handleCommand(comando);
-    }
-    input.value = '';
-  } else if (e.key === 'ArrowUp') {
-    // Recupera último comando digitado
-    if (window.lastTypedCommand) {
-      input.value = window.lastTypedCommand;
-      setTimeout(() => input.setSelectionRange(input.value.length, input.value.length), 0);
-    }
-  } else {
-    // Salva o comando atual para navegação
-    window.lastTypedCommand = input.value;
+// Limita o número de linhas do output para evitar lentidão visual
+function limitOutputLines(max = 200) {
+  const lines = output.innerText.split('\n');
+  if (lines.length > max) {
+    output.innerText = lines.slice(lines.length - max).join('\n');
   }
-});
-
-// Mensagem inicial
-setTimeout(() => {
-  print('Terminal - Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
-}, 300);
+}
 
 // ===== SISTEMA DE ARQUIVOS VIRTUAL =====
 const fs = {
   files: {
     'leia-me.txt': 'Bem-vindo ao terminal Ordo Realitas! Use ls para listar arquivos.',
+    '.segredo': 'Arquivo oculto. Você não deveria ter encontrado isso tão fácil...'
   },
   exists(name) { return Object.prototype.hasOwnProperty.call(this.files, name); },
   read(name) { return this.exists(name) ? this.files[name] : null; },
   write(name, content) { this.files[name] = content; },
   remove(name) { if (this.exists(name)) delete this.files[name]; },
-  list() { return Object.keys(this.files); }
+  list(all = false) {
+    return Object.keys(this.files).filter(f => all || !f.startsWith('.'));
+  }
 };
 
 // ===== COMANDOS DE ARQUIVO =====
-function cmd_ls() {
-  const files = fs.list();
-  if (files.length === 0) print('Nenhum arquivo encontrado.');
-  else print(files.join('\n'));
+function cmd_ls(flag) {
+  let all = flag === '-a';
+  if (flag && flag !== '-a') {
+    print('Flag desconhecida. Use apenas ls ou ls -a para arquivos ocultos.');
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  const files = fs.list(all);
+  if (files.length === 0) {
+    print('Nenhum arquivo encontrado.');
+    if (!all && fs.list(true).length > 0) print('Dica: use ls -a para ver arquivos ocultos.');
+  } else print(files.join('\n'));
+  if (Math.random() < 0.18) print('[ALERTA] Atividade suspeita detectada em logs recentes.');
 }
 function cmd_cat(name) {
-  if (!name) { print('Uso: cat <arquivo>'); return; }
-  if (!fs.exists(name)) { print('Arquivo não encontrado.'); return; }
-  print(fs.read(name));
+  if (!name) { print('Uso: cat <arquivo>'); output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900); return; }
+  if (!fs.exists(name)) { print('Arquivo não encontrado.'); output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900); return; }
+  let conteudo = fs.read(name);
+  print(conteudo === undefined ? '' : conteudo);
+  if (name.startsWith('secreto_') || name.startsWith('.')) {
+    print('Você sente um calafrio ao ler este arquivo. Algo não está certo...');
+    if (Math.random() < 0.3) print('Uma interferência estranha ecoa no rádio...');
+  }
 }
-function cmd_rm(name) {
-  if (!name) { print('Uso: rm <arquivo>'); return; }
-  if (!fs.exists(name)) { print('Arquivo não encontrado.'); return; }
+function cmd_rm(name, flag) {
+  if (!name) { print('Uso: rm <arquivo>'); output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900); return; }
+  if (!fs.exists(name)) { print('Arquivo não encontrado.'); output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900); return; }
+  if (name === 'leia-me.txt' && flag !== '-f') {
+    print('O sistema hesita. Tem certeza que deseja remover este arquivo? (rm -f leia-me.txt para forçar)');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
   fs.remove(name);
-  print('Arquivo removido: ' + name);
+  const msgs = [
+    'Arquivo removido: ' + name,
+    'Remoção concluída.',
+    'Arquivo deletado com sucesso.',
+    'O arquivo foi apagado dos registros.'
+  ];
+  print(msgs[Math.floor(Math.random()*msgs.length)]);
+  if (Math.random() < 0.15) print('[SISTEMA] Log de remoção registrado.');
 }
 function cmd_criar(name, ...conteudo) {
-  if (!name || !conteudo.length) { print('Uso: criar <arquivo> <conteúdo>'); return; }
+  if (!name || !conteudo.length) { print('Uso: criar <arquivo> <conteúdo>'); output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900); return; }
   fs.write(name, conteudo.join(' '));
-  print('Arquivo criado: ' + name);
+  const msgs = [
+    'Arquivo criado: ' + name,
+    'Novo arquivo registrado.',
+    'Criação concluída.',
+    'Arquivo salvo com sucesso.'
+  ];
+  print(msgs[Math.floor(Math.random()*msgs.length)]);
+  if (name.startsWith('.')) print('Você criou um arquivo oculto. Poucos saberão encontrá-lo.');
 }
-
-// ===== COMANDOS DE ARQUIVO AVANÇADOS =====
 function cmd_editar(name, ...conteudo) {
   if (!name || !fs.exists(name)) {
     print('Uso: editar <arquivo> <novo_conteúdo>');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   if (!conteudo.length) {
     print('Nada para editar.');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   fs.write(name, conteudo.join(' '));
-  print('Arquivo editado: ' + name);
+  const msgs = [
+    'Arquivo editado: ' + name,
+    'Alteração registrada.',
+    'Conteúdo atualizado.',
+    'Edição concluída.'
+  ];
+  print(msgs[Math.floor(Math.random()*msgs.length)]);
+  if (Math.random() < 0.12) print('[SISTEMA] Log de edição registrado.');
 }
 function cmd_mv(oldName, newName) {
   if (!oldName || !newName) {
     print('Uso: mv <arquivo_antigo> <arquivo_novo>');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   if (!fs.exists(oldName)) {
     print('Arquivo não encontrado.');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   if (fs.exists(newName)) {
     print('Já existe um arquivo com esse nome.');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   fs.write(newName, fs.read(oldName));
@@ -740,6 +774,7 @@ function cmd_mv(oldName, newName) {
 function cmd_grep(padrao) {
   if (!padrao) {
     print('Uso: grep <texto>');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
     return;
   }
   let achou = false;
@@ -750,7 +785,11 @@ function cmd_grep(padrao) {
       achou = true;
     }
   });
-  if (!achou) print('Nenhum resultado encontrado.');
+  if (!achou) {
+    print('Nenhum resultado encontrado. Tente outros termos ou investigue arquivos secretos.');
+    output.classList.add('flash-error'); setTimeout(() => output.classList.remove('flash-error'), 900);
+  }
+  else print('DICA: Se encontrar códigos ou mensagens cifradas, use decodificar ou descriptografar.');
 }
 
 // ===== INTEGRAÇÃO DOS COMANDOS COM ARQUIVOS =====
@@ -762,14 +801,16 @@ fakeScan = function() {
   lastScanHosts.forEach(h => {
     fs.write(`host_${h.ip.replace(/\./g,'_')}.txt`, `Host: ${h.ip}\nPortas: ${h.ports.join(', ')}`);
   });
-  print('Arquivos de hosts criados. Use ls para ver.');
+  print('Arquivos de hosts criados com pistas. Use ls/cat para investigar.');
 };
 // Modifica fakeConnect para criar arquivo de log
 const originalFakeConnect = fakeConnect;
 fakeConnect = function(ip) {
   originalFakeConnect(ip);
   if (ip && lastScanHosts.some(h => h.ip === ip)) {
-    fs.write(`log_conexao_${ip.replace(/\./g,'_')}.txt`, `Conexão estabelecida com ${ip} em 16/04/2025.`);
+    let contexto = 'Conexão estabelecida com ' + ip + ' em 16/04/2025.';
+    if (pistasPorHost[ip]) contexto += '\n' + pistasPorHost[ip];
+    fs.write(`log_conexao_${ip.replace(/\./g,'_')}.txt`, contexto);
   }
 };
 // Modifica fakeHack para criar arquivo secreto
@@ -777,7 +818,9 @@ const originalFakeHack = fakeHack;
 fakeHack = function() {
   if (!agentProfile.lastHost) { originalFakeHack(); return; }
   originalFakeHack();
-  fs.write(`secreto_${agentProfile.lastHost.replace(/\./g,'_')}.txt`, 'Dado secreto extraído do host. Use cat para ler.');
+  let pista = 'Nada encontrado.';
+  if (pistasPorHost[agentProfile.lastHost]) pista = 'PISTA: ' + pistasPorHost[agentProfile.lastHost];
+  fs.write(`secreto_${agentProfile.lastHost.replace(/\./g,'_')}.txt`, `Dado secreto extraído do host.\n${pista}`);
 };
 // Modifica showLogs para ler arquivos de log
 const originalShowLogs = showLogs;
@@ -785,6 +828,8 @@ showLogs = function() {
   const logs = fs.list().filter(f => f.startsWith('log_conexao_'));
   if (logs.length === 0) originalShowLogs();
   else logs.forEach(f => print(`${f}:\n${fs.read(f)}`));
+  // Dica extra
+  if (logs.length > 0) print('DICA: Use cat, grep ou decodificar para investigar arquivos gerados.');
 };
 
 // Função para conectar a um host
@@ -808,6 +853,7 @@ function fakeConnect(ip) {
     showAccessMsg('Acesso concedido!');
     successSound.currentTime = 0;
     successSound.play();
+    updatePromptVisual(); // Atualiza prompt imediatamente
   });
 }
 
@@ -841,6 +887,7 @@ function fakeHack() {
     showAccessMsg('Invasão bem-sucedida!');
     successSound.currentTime = 0;
     successSound.play();
+    updatePromptVisual(); // Atualiza prompt imediatamente
   });
 }
 
@@ -910,3 +957,54 @@ function safeAtob(str) {
     return '[base64 inválido]';
   }
 }
+
+// ===== MELHORIA DE IMERSÃO E CORRELAÇÃO =====
+// Adiciona dicas e pistas em arquivos criados por comandos
+const pistasPorHost = {
+  '192.168.0.2': 'DICA: Use decodificar morse ... para analisar mensagens interceptadas.',
+  '10.0.0.5': 'DICA: Há um arquivo oculto neste host. Use grep senha.',
+  '172.16.1.10': 'DICA: Mensagem cifrada encontrada. Tente descriptografar.',
+  '192.168.1.13': 'DICA: Portas incomuns abertas. Pode haver algo escondido.',
+  '10.10.10.10': 'DICA: Host vulnerável. Invada para obter segredos.',
+  '172.20.0.7': 'DICA: Artefato digital suspeito. Use cat para investigar.',
+  '192.168.100.100': 'DICA: Comunicação criptografada. Use decodificar base64 ...',
+};
+// Modifica fakeScan para incluir pistas nos arquivos de host
+const originalFakeScanImm = fakeScan;
+fakeScan = function() {
+  originalFakeScanImm();
+  lastScanHosts.forEach(h => {
+    let texto = `Host: ${h.ip}\nPortas: ${h.ports.join(', ')}`;
+    if (pistasPorHost[h.ip]) texto += `\n${pistasPorHost[h.ip]}`;
+    fs.write(`host_${h.ip.replace(/\./g,'_')}.txt`, texto);
+  });
+  print('Arquivos de hosts criados com pistas. Use ls/cat para investigar.');
+};
+// Modifica fakeHack para gerar arquivos secretos com pistas
+const originalFakeHackImm = fakeHack;
+fakeHack = function() {
+  if (!agentProfile.lastHost) { originalFakeHackImm(); return; }
+  originalFakeHackImm();
+  let pista = 'Nada encontrado.';
+  if (pistasPorHost[agentProfile.lastHost]) pista = 'PISTA: ' + pistasPorHost[agentProfile.lastHost];
+  fs.write(`secreto_${agentProfile.lastHost.replace(/\./g,'_')}.txt`, `Dado secreto extraído do host.\n${pista}`);
+};
+// Modifica fakeConnect para criar logs com contexto
+const originalFakeConnectImm = fakeConnect;
+fakeConnect = function(ip) {
+  originalFakeConnectImm(ip);
+  if (ip && lastScanHosts.some(h => h.ip === ip)) {
+    let contexto = 'Conexão estabelecida com ' + ip + ' em 16/04/2025.';
+    if (pistasPorHost[ip]) contexto += '\n' + pistasPorHost[ip];
+    fs.write(`log_conexao_${ip.replace(/\./g,'_')}.txt`, contexto);
+  }
+};
+// Modifica showLogs para mostrar logs e pistas
+const originalShowLogsImm = showLogs;
+showLogs = function() {
+  const logs = fs.list().filter(f => f.startsWith('log_conexao_'));
+  if (logs.length === 0) originalShowLogsImm();
+  else logs.forEach(f => print(`${f}:\n${fs.read(f)}`));
+  // Dica extra
+  if (logs.length > 0) print('DICA: Use cat, grep ou decodificar para investigar arquivos gerados.');
+};
