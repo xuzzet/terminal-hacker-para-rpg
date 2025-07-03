@@ -16,7 +16,11 @@ body {
   -webkit-touch-callout: none;
   /* Permite seleção apenas em campos de input para acessibilidade */
 }
-input, textarea, select, button, #command {
+input,
+textarea,
+select,
+button,
+#command {
   -webkit-user-select: text !important;
   -moz-user-select: text !important;
   -ms-user-select: text !important;
@@ -27,7 +31,10 @@ input, textarea, select, button, #command {
   pointer-events: none;
   position: fixed;
   z-index: 1;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100vh;
   opacity: 0.13;
@@ -36,23 +43,30 @@ input, textarea, select, button, #command {
   animation: noiseMove 1.2s steps(2) infinite;
 }
 @keyframes noiseMove {
-  0% { background-position: 0 0; }
-  100% { background-position: 100px 100px; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 100px;
+  }
 }
 
 #scanlines {
   pointer-events: none;
   position: fixed;
   z-index: 2;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100vh;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,0) 0px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.13) 4px,
-    rgba(0,0,0,0) 6px
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.13) 4px,
+    rgba(0, 0, 0, 0) 6px
   );
   opacity: 0.22;
   -webkit-mix-blend-mode: multiply;
@@ -61,7 +75,7 @@ input, textarea, select, button, #command {
 
 #terminal-container {
   background: rgba(10, 20, 10, 0.92);
-  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.7), 0 1.5px 0 #33ff33 inset;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), 0 1.5px 0 #33ff33 inset;
   border-radius: 0;
   border: 2px solid #222;
   width: 100vw;
@@ -71,11 +85,14 @@ input, textarea, select, button, #command {
   margin: 0;
   overflow: hidden;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
-  -webkit-box-shadow: 0 8px 32px 0 rgba(0,0,0,0.7), 0 1.5px 0 #33ff33 inset;
-  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.7), 0 1.5px 0 #33ff33 inset;
+  -webkit-box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), 0 1.5px 0 #33ff33 inset;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), 0 1.5px 0 #33ff33 inset;
   -webkit-border-radius: 0;
   border-radius: 0;
   display: flex;
@@ -119,30 +136,39 @@ input, textarea, select, button, #command {
   border: 1.5px solid #222;
   animation: led-blink 2.2s infinite alternate;
 }
-.led-red { 
-  background: #ff3b3b; 
-  box-shadow: 0 0 8px #ff3b3b88; 
-  animation-delay: 0s; 
+.led-red {
+  background: #ff3b3b;
+  box-shadow: 0 0 8px #ff3b3b88;
+  animation-delay: 0s;
 }
-.led-yellow { 
-  background: #ffe066; 
-  box-shadow: 0 0 8px #ffe06688; 
-  animation-delay: 0.7s; 
+.led-yellow {
+  background: #ffe066;
+  box-shadow: 0 0 8px #ffe06688;
+  animation-delay: 0.7s;
 }
-.led-green { 
-  background: #33ff33; 
-  box-shadow: 0 0 8px #33ff3388; 
-  animation-delay: 1.3s; 
+.led-green {
+  background: #33ff33;
+  box-shadow: 0 0 8px #33ff3388;
+  animation-delay: 1.3s;
 }
 @keyframes led-blink {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(2.2); box-shadow: 0 0 16px #fff8; }
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(2.2);
+    box-shadow: 0 0 16px #fff8;
+  }
 }
 
 #boot-screen {
   position: fixed;
   z-index: 1000;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #000;
   color: #33ff33;
   display: flex;
@@ -189,7 +215,7 @@ input, textarea, select, button, #command {
   margin-top: 0.04em;
   word-break: break-word;
   padding-left: 0;
-  animation: fadeInLineMinimal 0.5s cubic-bezier(.39,.58,.57,1) 1;
+  animation: fadeInLineMinimal 0.5s cubic-bezier(0.39, 0.58, 0.57, 1) 1;
   filter: none;
   text-shadow: none;
   font-weight: 400;
@@ -233,12 +259,20 @@ input, textarea, select, button, #command {
   font-weight: 400;
 }
 @keyframes bootBlinkMinimal {
-  0% { opacity: 1; }
-  100% { opacity: 0.7; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 @keyframes fadeInLineMinimal {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .boot-blink {
   animation: blink 1s steps(1) infinite;
@@ -249,25 +283,31 @@ input, textarea, select, button, #command {
   text-shadow: none;
 }
 #boot-screen::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   z-index: 2;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,0) 0px,
-    rgba(0,255,0,0.04) 2px,
-    rgba(0,0,0,0.08) 4px,
-    rgba(0,0,0,0) 6px
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 255, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.08) 4px,
+    rgba(0, 0, 0, 0) 6px
   );
   opacity: 0.13;
   animation: scanlineMove 2.5s linear infinite;
 }
 #boot-screen::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   z-index: 1;
   background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.7"/></svg>');
@@ -318,7 +358,7 @@ input, textarea, select, button, #command {
   margin-bottom: 0;
   padding: 18px 24px 12px 24px;
   border-radius: 8px;
-  background: rgba(0,0,0,0.18);
+  background: rgba(0, 0, 0, 0.18);
   box-sizing: border-box;
   -webkit-box-shadow: 0 0 4px #33ff3344;
   box-shadow: 0 0 4px #33ff3344;
@@ -326,7 +366,9 @@ input, textarea, select, button, #command {
   border-radius: 8px;
 }
 
-#output > div, #output > span, #output > p {
+#output > div,
+#output > span,
+#output > p {
   margin-bottom: 0.45em;
   margin-top: 0.1em;
   word-break: break-word;
@@ -334,7 +376,9 @@ input, textarea, select, button, #command {
   padding-left: 2px;
 }
 
-#output > div:last-child, #output > span:last-child, #output > p:last-child {
+#output > div:last-child,
+#output > span:last-child,
+#output > p:last-child {
   margin-bottom: 0;
 }
 
@@ -474,21 +518,39 @@ input, textarea, select, button, #command {
   align-self: center;
 }
 @keyframes cursorColor {
-  0% { color: #33ff33; }
-  50% { color: #aaffaa; }
-  100% { color: #33ff33; }
+  0% {
+    color: #33ff33;
+  }
+  50% {
+    color: #aaffaa;
+  }
+  100% {
+    color: #33ff33;
+  }
 }
 
 .glitch {
   animation: glitch 0.3s linear 1;
 }
 @keyframes glitch {
-  0% { text-shadow: 2px 0 red, -2px 0 blue; }
-  20% { text-shadow: -2px 0 red, 2px 0 blue; }
-  40% { text-shadow: 2px 2px red, -2px -2px blue; }
-  60% { text-shadow: -2px -2px red, 2px 2px blue; }
-  80% { text-shadow: 2px 0 red, -2px 0 blue; }
-  100% { text-shadow: none; }
+  0% {
+    text-shadow: 2px 0 red, -2px 0 blue;
+  }
+  20% {
+    text-shadow: -2px 0 red, 2px 0 blue;
+  }
+  40% {
+    text-shadow: 2px 2px red, -2px -2px blue;
+  }
+  60% {
+    text-shadow: -2px -2px red, 2px 2px blue;
+  }
+  80% {
+    text-shadow: 2px 0 red, -2px 0 blue;
+  }
+  100% {
+    text-shadow: none;
+  }
 }
 
 /* Temas */
@@ -512,7 +574,10 @@ body.theme-futuristic .terminal-titlebar .title {
 body.theme-futuristic .terminal-titlebar .title::before {
   content: none;
 }
-body.theme-futuristic #terminal, body.theme-futuristic #output, body.theme-futuristic .prompt, body.theme-futuristic #command {
+body.theme-futuristic #terminal,
+body.theme-futuristic #output,
+body.theme-futuristic .prompt,
+body.theme-futuristic #command {
   color: #00fff7;
   text-shadow: 0 0 6px #00fff744;
 }
@@ -532,7 +597,10 @@ body.theme-retro .terminal-titlebar .title {
 body.theme-retro .terminal-titlebar .title::before {
   content: none;
 }
-body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, body.theme-retro #command {
+body.theme-retro #terminal,
+body.theme-retro #output,
+body.theme-retro .prompt,
+body.theme-retro #command {
   color: #ffcc00;
   text-shadow: 0 0 6px #ffcc0044;
 }
@@ -543,8 +611,13 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   color: #ff3333 !important;
 }
 @keyframes flashError {
-  0%, 100% { color: #ff3333; }
-  50% { color: #33ff33; }
+  0%,
+  100% {
+    color: #ff3333;
+  }
+  50% {
+    color: #33ff33;
+  }
 }
 
 .access-msg {
@@ -556,7 +629,7 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   font-weight: bold;
   padding: 0.2em 1.2em;
   border-radius: 8px;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   color: #33ff33;
   text-shadow: 0 0 18px #33ff33, 0 0 2px #fff;
   opacity: 0;
@@ -570,22 +643,46 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   border: 2px solid #ff3333;
 }
 @keyframes accessMsgAnim {
-  0% { opacity: 0; transform: translate(-50%,-50%) scale(0.7); }
-  20% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
-  60% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%,-50%) scale(0.7); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
 }
 
 .shake {
   animation: shakeAnim 0.25s 1;
 }
 @keyframes shakeAnim {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-7px); }
-  40% { transform: translateX(7px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 #intrusion-alert {
@@ -594,7 +691,7 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255,0,0,0.85);
+  background: rgba(255, 0, 0, 0.85);
   color: #fff;
   font-size: 2.5em;
   font-weight: bold;
@@ -607,13 +704,18 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   letter-spacing: 2px;
 }
 @keyframes alertBlink {
-  0% { opacity: 1; }
-  100% { opacity: 0.6; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 .data-stream {
   position: fixed;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   bottom: 0;
   width: 100vw;
   height: 100vh;
@@ -637,9 +739,17 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
   animation: dataStreamUp 1.2s linear forwards;
 }
 @keyframes dataStreamUp {
-  0% { transform: translateY(100vh); opacity: 0.7; }
-  80% { opacity: 1; }
-  100% { transform: translateY(-10vh); opacity: 0; }
+  0% {
+    transform: translateY(100vh);
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
 }
 
 /* ======= RESPONSIVIDADE PARA MOBILE E TABLET ======= */
@@ -727,7 +837,8 @@ body.theme-retro #terminal, body.theme-retro #output, body.theme-retro .prompt, 
 }
 
 /* Garante que o terminal ocupe toda a tela e não tenha barras de rolagem horizontais */
-html, body {
+html,
+body {
   width: 100vw;
   height: 100vh;
   overflow-x: hidden;
@@ -736,14 +847,20 @@ html, body {
 }
 
 /* Fallback para backdrop-filter */
-@supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-  #terminal-container, #input-line {
+@supports not (
+  (-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))
+) {
+  #terminal-container,
+  #input-line {
     background: rgba(10, 20, 10, 0.98) !important;
   }
 }
 
 /* Corrige zoom automático em inputs no iOS */
-input, textarea, select, button {
+input,
+textarea,
+select,
+button {
   font-size: 16px;
 }
 
@@ -754,12 +871,24 @@ input, textarea, select, button {
   animation: shakeInput 0.18s linear 1;
 }
 @keyframes shakeInput {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-2px); }
-  40% { transform: translateX(2px); }
-  60% { transform: translateX(-1px); }
-  80% { transform: translateX(1px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-2px);
+  }
+  40% {
+    transform: translateX(2px);
+  }
+  60% {
+    transform: translateX(-1px);
+  }
+  80% {
+    transform: translateX(1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /* Efeito glitch para linhas de erro/acesso negado (adicione .glitch em JS) */
@@ -767,12 +896,24 @@ input, textarea, select, button {
   animation: glitch 0.3s linear 1;
 }
 @keyframes glitch {
-  0% { text-shadow: 2px 0 red, -2px 0 blue; }
-  20% { text-shadow: -2px 0 red, 2px 0 blue; }
-  40% { text-shadow: 2px 2px red, -2px -2px blue; }
-  60% { text-shadow: -2px -2px red, 2px 2px blue; }
-  80% { text-shadow: 2px 0 red, -2px 0 blue; }
-  100% { text-shadow: none; }
+  0% {
+    text-shadow: 2px 0 red, -2px 0 blue;
+  }
+  20% {
+    text-shadow: -2px 0 red, 2px 0 blue;
+  }
+  40% {
+    text-shadow: 2px 2px red, -2px -2px blue;
+  }
+  60% {
+    text-shadow: -2px -2px red, 2px 2px blue;
+  }
+  80% {
+    text-shadow: 2px 0 red, -2px 0 blue;
+  }
+  100% {
+    text-shadow: none;
+  }
 }
 
 /* Scanlines mais perceptíveis, mas discretas */
@@ -781,17 +922,28 @@ input, textarea, select, button {
   animation: scanlineMove 2.5s linear infinite;
 }
 @keyframes scanlineMove {
-  0% { background-position-y: 0; }
-  100% { background-position-y: 12px; }
+  0% {
+    background-position-y: 0;
+  }
+  100% {
+    background-position-y: 12px;
+  }
 }
 
 /* Fade-in nas linhas impressas (adicione .fade-in em JS) */
-.printed-line, .fade-in {
-  animation: fadeInLine 0.7s cubic-bezier(.39,.58,.57,1) 1;
+.printed-line,
+.fade-in {
+  animation: fadeInLine 0.7s cubic-bezier(0.39, 0.58, 0.57, 1) 1;
 }
 @keyframes fadeInLine {
-  from { opacity: 0; filter: blur(2px); }
-  to { opacity: 1; filter: blur(0); }
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 /* Flash rápido ao pressionar Enter (adicione .flash-beep em JS) */
@@ -799,76 +951,105 @@ input, textarea, select, button {
   animation: flashBeep 0.12s linear 1;
 }
 @keyframes flashBeep {
-  0% { background: #33ff33; color: #000; }
-  100% { background: none; color: inherit; }
+  0% {
+    background: #33ff33;
+    color: #000;
+  }
+  100% {
+    background: none;
+    color: inherit;
+  }
 }
 
 /* Mantém o visual original, só adiciona efeitos de imersão */
 
-#terminal, #output {
+#terminal,
+#output {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
-#terminal::-webkit-scrollbar, #output::-webkit-scrollbar {
+#terminal::-webkit-scrollbar,
+#output::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
 /* === EFEITOS HACKER/CYBERPUNK ADICIONAIS === */
 
 /* Phosphor glow mais intenso nas letras do terminal/output */
-#output, #terminal, .prompt, #command, .printed-line {
-  text-shadow:
-    0 0 2px #33ff33cc,
-    0 0 6px #33ff3344,
-    0 0 18px #33ff3311;
+#output,
+#terminal,
+.prompt,
+#command,
+.printed-line {
+  text-shadow: 0 0 2px #33ff33cc, 0 0 6px #33ff3344, 0 0 18px #33ff3311;
 }
 
 /* Sombra interna sutil nas bordas do terminal (efeito CRT) */
 #terminal-container {
-  box-shadow:
-    0 8px 32px 0 rgba(0,0,0,0.7),
-    0 1.5px 0 #33ff33 inset,
-    0 0 0 6px #111a inset,
-    0 0 32px #33ff3311 inset;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7), 0 1.5px 0 #33ff33 inset,
+    0 0 0 6px #111a inset, 0 0 32px #33ff3311 inset;
 }
 
 /* Reflexo animado sutil no topo do terminal (efeito glass) */
 #terminal-container::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 38px;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
   opacity: 0.22;
   z-index: 3;
   animation: glassReflex 3.2s linear infinite alternate;
 }
 @keyframes glassReflex {
-  0% { opacity: 0.18; }
-  100% { opacity: 0.28; }
+  0% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0.28;
+  }
 }
 
 /* Artefatos de ruído digital nas bordas do terminal */
 #terminal-container::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(90deg, transparent, #33ff3308 2px, transparent 4px),
-              repeating-linear-gradient(180deg, transparent, #33ff3305 1.5px, transparent 3px);
+  background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      #33ff3308 2px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      #33ff3305 1.5px,
+      transparent 3px
+    );
   opacity: 0.13;
   z-index: 2;
 }
 
 /* Efeito de ghosting/rastro nas linhas impressas (CRT) */
-.printed-line, .fade-in {
+.printed-line,
+.fade-in {
   position: relative;
 }
-.printed-line::after, .fade-in::after {
+.printed-line::after,
+.fade-in::after {
   content: attr(data-ghost);
   position: absolute;
-  left: 0; top: 0;
+  left: 0;
+  top: 0;
   color: #33ff3355;
   filter: blur(2.5px) brightness(1.2);
   opacity: 0.18;
@@ -882,9 +1063,10 @@ input, textarea, select, button {
   overflow: hidden;
 }
 .hacker-interference::before {
-  content: '';
+  content: "";
   position: absolute;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   top: 50%;
   height: 7px;
   background: linear-gradient(90deg, #33ff3340 0%, #0000 100%);
@@ -895,23 +1077,36 @@ input, textarea, select, button {
   z-index: 100;
 }
 @keyframes interferenceMove {
-  0% { transform: translateY(-2px) scaleX(1.01); }
-  100% { transform: translateY(2px) scaleX(0.99); }
+  0% {
+    transform: translateY(-2px) scaleX(1.01);
+  }
+  100% {
+    transform: translateY(2px) scaleX(0.99);
+  }
 }
 
 /* Cursor piscando com glitch e distorção de cor */
 #blinking-cursor {
-  animation: blink 1s steps(1) infinite, cursorColor 2.2s linear infinite, cursorGlitch 0.22s linear infinite;
+  animation: blink 1s steps(1) infinite, cursorColor 2.2s linear infinite,
+    cursorGlitch 0.22s linear infinite;
   filter: drop-shadow(0 0 2px #33ff33cc) drop-shadow(0 0 6px #33ff3344);
 }
 @keyframes cursorGlitch {
-  0% { text-shadow: 1px 0 #33ff33, -1px 0 #fff; }
-  50% { text-shadow: -1px 0 #33ff33, 1px 0 #fff; }
-  100% { text-shadow: 0 0 6px #33ff33; }
+  0% {
+    text-shadow: 1px 0 #33ff33, -1px 0 #fff;
+  }
+  50% {
+    text-shadow: -1px 0 #33ff33, 1px 0 #fff;
+  }
+  100% {
+    text-shadow: 0 0 6px #33ff33;
+  }
 }
 
 /* Ajuste para garantir que os efeitos não causem overflow */
-#terminal-container, #terminal, #output {
+#terminal-container,
+#terminal,
+#output {
   overflow-x: hidden;
 }
 
@@ -919,7 +1114,10 @@ input, textarea, select, button {
 .shutdown-screen {
   position: fixed;
   z-index: 3000;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #000;
   color: #33ff33;
   font-family: monospace;
@@ -930,13 +1128,22 @@ input, textarea, select, button {
   text-align: center;
   letter-spacing: 1.2px;
   line-height: 1.6;
-  animation: shutdownFade 1.2s cubic-bezier(.39,.58,.57,1);
+  animation: shutdownFade 1.2s cubic-bezier(0.39, 0.58, 0.57, 1);
   user-select: none;
 }
 @keyframes shutdownFade {
-  0% { opacity: 0; filter: blur(2px); }
-  60% { opacity: 1; filter: blur(0); }
-  100% { opacity: 1; filter: blur(0); }
+  0% {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 .shutdown-screen .shutdown-blink {
   color: #33ff33;
@@ -945,25 +1152,31 @@ input, textarea, select, button {
   animation: blink 1s steps(1) infinite;
 }
 .shutdown-screen::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   z-index: 1;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,0) 0px,
-    rgba(0,255,0,0.04) 2px,
-    rgba(0,0,0,0.08) 4px,
-    rgba(0,0,0,0) 6px
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 255, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.08) 4px,
+    rgba(0, 0, 0, 0) 6px
   );
   opacity: 0.13;
   animation: scanlineMove 2.5s linear infinite;
 }
 .shutdown-screen::after {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   z-index: 0;
   background: url('data:image/svg+xml;utf8,<svg width="100%25" height="100%25" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2"/></filter><rect width="100%25" height="100%25" filter="url(%23n)" opacity="0.7"/></svg>');
