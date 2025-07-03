@@ -348,11 +348,11 @@ function handleCommand(cmd) {
     // Narrativa de investigação do Marcos Torres
     const narrativa = [
       '[LOG DE INVESTIGAÇÃO - AGENTE MARCOS TORRES]',
-      '22:41 - Cheguei ao local do ritual. Sinais de atividade recente. O chão está coberto de símbolos estranhos.',
-      '22:43 - Encontrei vestígios de cera e um círculo desenhado em sangue. O ar está pesado, sensação de ser observado.',
-      '22:45 - Ouvi sussurros vindos do corredor. Gravei o áudio para análise posterior. Nenhum sinal de Mabel até agora.',
-      '22:47 - Mensagem cifrada encontrada: "A Fé é a chave. Eles observam."',
-      '22:49 - Preciso sair. Algo está errado. Encerrando log.',
+      '21:41 - Cheguei ao local do ritual. Sinais de atividade recente. O chão está coberto de símbolos estranhos. (16/04)',
+      '21:43 - Encontrei vestígios de cera e um círculo desenhado em sangue. O ar está pesado, sensação de ser observado. (16/04)',
+      '21:45 - Ouvi sussurros vindos do corredor. Gravei o áudio para análise posterior. Nenhum sinal de Mabel até agora. (16/04)',
+      '21:47 - Mensagem cifrada encontrada: "A Fé é a chave. Eles observam." (16/04)',
+      '21:49 - Preciso sair. Algo está errado. Encerrando log. (16/04)',
       '...'
     ];
     let idx = 0;
@@ -429,7 +429,7 @@ function handleCommand(cmd) {
       } else if (type === 'bin') {
         animatedDecode('binário', content, decodeBinary);
       } else if (type === 'base64') {
-        animatedDecode('base64', content, atob);
+        animatedDecode('base64', content, safeAtob);
       } else if (type === 'hex') {
         animatedDecode('hexadecimal', content, decodeHex);
       } else if (type === 'rot13') {
@@ -502,6 +502,10 @@ function handleCommand(cmd) {
       print('Perfil atualizado.', {typewriter: true});
       lastCommand = 'codinome';
       break;
+    case 'conversa':
+      showAgentChat();
+      lastCommand = 'conversa';
+      break;
     default:
       failCount++;
       showIntrusionAlert();
@@ -525,6 +529,62 @@ function handleCommand(cmd) {
       setTimeout(() => output.classList.remove('flash-error'), 900);
       lastCommand = 'falha';
   }
+}
+
+// Comando de conversa dos agentes
+function showAgentChat() {
+  const chat = [
+    '[LOG INTERNO - ORDO REALITAS - EQUIPE DE SUPORTE ALFA-OURO]',
+    '[Canal Privado | Transmissão Segura | 17:42 - Dia 16/04]',
+    '',
+    '> user_marcos_torres [Líder | Ocultista]',
+    'Os novatos chegaram. Sejam gentis. Ou pelo menos... tentem parecer.',
+    'Eles vão precisar de rostos amigáveis quando as coisas começarem a ficar estranhas.',
+    '',
+    '> user.mabel_oliveira [Especialista | Hacker]',
+    'Gentil? Sempre. 👼',
+    'Exceto quando tentam usar “senha123” no terminal da Ordem.',
+    '(Novatos, não façam isso. Sério.)',
+    '',
+    '> user.victor_santos [Combatente | Brigão]',
+    'Se tiver alguma porta trancada, é só me chamar.',
+    'Ah, e se alguém tiver uma barra de cereal extra... eu aceito.',
+    '',
+    '> user.zoe_romano [Especialista | Arte & Negociação]',
+    'Bem-vindos.',
+    'Se precisarem de ajuda pra lidar com gente difícil — ou arte amaldiçoada — podem me chamar.',
+    '(Aparentemente, isso acontece mais do que deveria.)',
+    '',
+    '> user.rodrigo_miranda [Combatente | Armamentos]',
+    'Mantenham a cabeça baixa, os olhos abertos e a calma sempre por último.',
+    'Ah... e não apontem nada que não pretendem destruir.',
+    '',
+    '> user.mabel_oliveira',
+    '⚠ Curiosidades que ninguém pediu:',
+    '– Marcos anota os sonhos dele em latim.',
+    '– Zoe fala seis línguas, mas prefere silêncio.',
+    '– Victor uma vez deu um soco num espelho achando que era um portal.',
+    '– Rodrigo dorme com um canivete debaixo do travesseiro.',
+    '– Eu sou a Mabel. Eu tenho backups de todo mundo. Até de vocês. 😌',
+    '',
+    '> user.marcos_torres',
+    'Esse é o time que vai apoiar vocês nos bastidores.',
+    'Nós erramos. Nós aprendemos.',
+    'E se vocês caírem… nós vamos estar lá pra levantar vocês.',
+    'Às vezes, só ouvir outra voz do outro lado da linha já ajuda.',
+    'Boa sorte em Ouro Virgem. A cidade parece pequena, mas os segredos dela são grandes demais.',
+    '',
+    '[FIM DO LOG]'
+  ];
+  let idx = 0;
+  function nextLine() {
+    if (idx < chat.length) {
+      print(chat[idx], {typewriter: true, sound: false});
+      idx++;
+      setTimeout(nextLine, 900);
+    }
+  }
+  nextLine();
 }
 
 // Efeito shake
@@ -583,3 +643,127 @@ input.addEventListener('keydown', e => {
 setTimeout(() => {
   print('Terminal - Ordo Realitas Iniciado. Digite "ajuda" para comandos.', {typewriter: true});
 }, 300);
+
+// Função para conectar a um host
+function fakeConnect(ip) {
+  if (!ip) {
+    print('Exemplo de uso: conectar <ip>', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  if (!lastScanHosts.some(h => h.ip === ip)) {
+    print('Host não encontrado. Faça um escaneamento primeiro.', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  animatedProgress('Conectando ao host ' + ip + '...', 1000, () => {
+    print('Conexão estabelecida com ' + ip, {typewriter: true});
+    agentProfile.connections++;
+    agentProfile.lastHost = ip;
+    showAccessMsg('Acesso concedido!');
+    successSound.currentTime = 0;
+    successSound.play();
+  });
+}
+
+// Função para descriptografar mensagem (fake)
+function fakeDecrypt(msg) {
+  if (!msg.trim()) {
+    print('Exemplo de uso: descriptografar <mensagem>', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  animatedProgress('Descriptografando...', 900, () => {
+    print('Mensagem descriptografada: "A fé é a chave"', {typewriter: true});
+    showAccessMsg('Descriptografado!');
+    successSound.currentTime = 0;
+    successSound.play();
+  });
+}
+
+// Função para simular invasão
+function fakeHack() {
+  if (!agentProfile.lastHost) {
+    print('Conecte-se a um host antes de invadir.', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  animatedProgress('Invadindo host ' + agentProfile.lastHost + '...', 1200, () => {
+    print('Invasão bem-sucedida em ' + agentProfile.lastHost + '!', {typewriter: true});
+    agentProfile.hacks++;
+    showAccessMsg('Invasão bem-sucedida!');
+    successSound.currentTime = 0;
+    successSound.play();
+  });
+}
+
+// Função para mostrar logs fictícios
+function showLogs() {
+  print('[LOGS DO SISTEMA]\n- 21:41: Host 192.168.0.2 acessado em 16/04\n- 21:43: Mensagem cifrada interceptada em 16/04\n- 21:45: Tentativa de invasão detectada em 16/04\n- 21:47: Mensagem descriptografada com sucesso em 16/04', {typewriter: true});
+}
+
+// Função para trocar tema via comando
+function themeByCommand(theme) {
+  if (!theme) {
+    print('Temas disponíveis: classico, futurista, retro', {typewriter: true});
+    return;
+  }
+  const t = theme.toLowerCase();
+  let found = false;
+  if (t === 'classico' || t === 'classic') {
+    document.body.className = 'theme-classic';
+    setActiveThemeButton('classic');
+    found = true;
+  } else if (t === 'futurista' || t === 'futuristic') {
+    document.body.className = 'theme-futuristic';
+    setActiveThemeButton('futuristic');
+    found = true;
+  } else if (t === 'retro' || t === 'retrô') {
+    document.body.className = 'theme-retro';
+    setActiveThemeButton('retro');
+    found = true;
+  }
+  if (found) {
+    print('Tema alterado para ' + theme, {typewriter: true});
+    successSound.currentTime = 0;
+    successSound.play();
+  } else {
+    print('Tema não reconhecido. Temas: classico, futurista, retro', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+  }
+}
+
+// Função para desligar o terminal
+function shutdownTerminal() {
+  print('Desligando terminal...', {typewriter: true});
+  setTimeout(() => {
+    document.body.innerHTML = '<div style="color:#33ff33;font-family:monospace;text-align:center;margin-top:20vh;font-size:2em;">Terminal desligado.<br>Pressione F5 para reiniciar.</div>';
+  }, 1200);
+}
+
+// Função para definir codinome
+function setCodename(nome) {
+  if (!nome || nome.trim().length < 2) {
+    print('Codinome inválido. Use: codinome <nome>', {typewriter: true});
+    output.classList.add('flash-error');
+    setTimeout(() => output.classList.remove('flash-error'), 900);
+    return;
+  }
+  userAgent = nome.trim();
+  agentProfile.codename = userAgent;
+  print('Codinome alterado para ' + userAgent, {typewriter: true});
+}
+
+// Corrige decodificação base64 para tratar erros
+function safeAtob(str) {
+  try {
+    return atob(str);
+  } catch (e) {
+    return '[base64 inválido]';
+  }
+}
